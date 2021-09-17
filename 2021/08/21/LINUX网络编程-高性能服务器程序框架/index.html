@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="1 服务器模型1.1 C&#x2F;S模型    服务端&#x2F;客户端 程序逻辑     服务端 创建一个&#x2F;多个socket，并调用bind函数将之绑定到服务器感兴趣的端口上，然后调用listen函数的连接，等待客户连接   客户端 调用connect函数向服务器发送连接。     以下是他们的工作流程图：  C&#x2F;S模型适用于资源相对集中的场合，但访问量过大时，可能客户都会得到很慢的相应。 1.2 P2P模型点对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINUX网络编程-高性能服务器程序框架">
+<meta property="og:url" content="http://example.com/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="1 服务器模型1.1 C&#x2F;S模型    服务端&#x2F;客户端 程序逻辑     服务端 创建一个&#x2F;多个socket，并调用bind函数将之绑定到服务器感兴趣的端口上，然后调用listen函数的连接，等待客户连接   客户端 调用connect函数向服务器发送连接。     以下是他们的工作流程图：  C&#x2F;S模型适用于资源相对集中的场合，但访问量过大时，可能客户都会得到很慢的相应。 1.2 P2P模型点对">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://z3.ax1x.com/2021/08/21/fxHIRx.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/08/21/fxbJYR.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/08/21/fxba6K.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/08/21/fxLNqO.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvP4jP.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvP4jP.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvETYD.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvVMp4.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvVd9e.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hvV0cd.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/10/hveL6J.png">
+<meta property="article:published_time" content="2021-08-21T12:46:06.000Z">
+<meta property="article:modified_time" content="2021-09-10T12:23:32.118Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="网络编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3.ax1x.com/2021/08/21/fxHIRx.png">
+
+
+<link rel="canonical" href="http://example.com/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6/","path":"2021/08/21/LINUX网络编程-高性能服务器程序框架/","title":"LINUX网络编程-高性能服务器程序框架"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LINUX网络编程-高性能服务器程序框架 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">1 服务器模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-C-S%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 C&#x2F;S模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-P2P%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 P2P模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BC%96%E7%A8%8B%E6%A1%86%E6%9E%B6"><span class="nav-number">2.</span> <span class="nav-text">2 服务器编程框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-I-O%E5%A4%84%E7%90%86%E5%8D%95%E5%85%83"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 I&#x2F;O处理单元</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E9%80%BB%E8%BE%91%E5%8D%95%E5%85%83"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 逻辑单元</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E7%BD%91%E7%BB%9C%E5%AD%98%E5%82%A8%E5%8D%95%E5%85%83"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 网络存储单元</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-I-O%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">3 I&#x2F;O模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%98%BB%E5%A1%9EI-O"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 阻塞I&#x2F;O</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-I-O%E5%A4%8D%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 I&#x2F;O复用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-SIGIO%E4%BF%A1%E5%8F%B7"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 SIGIO信号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%BC%82%E6%AD%A5I-O"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 异步I&#x2F;O</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E5%9B%9B%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BC%98%E5%8A%A3"><span class="nav-number">3.5.</span> <span class="nav-text">总结：四种I&#x2F;O模型的优劣</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">4 事件处理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-reactor%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 reactor模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-proactor%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 proactor模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%A8%A1%E6%8B%9Fproactor%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 模拟proactor模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">5 并发模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%8D%8A%E5%90%8C%E6%AD%A5-%E5%8D%8A%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 半同步&#x2F;半异步模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8A%E5%90%8C%E6%AD%A5-%E5%8D%8A%E5%8F%8D%E5%BA%94%E5%A0%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.1.1.</span> <span class="nav-text">半同步-半反应堆模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%95%88%E5%8D%8A%E5%90%8C%E6%AD%A5-%E5%8D%8A%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.1.2.</span> <span class="nav-text">高效半同步-半异步模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E9%A2%86%E5%AF%BC%E8%80%85-%E8%BF%BD%E9%9A%8F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 领导者&#x2F;追随者模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">6.</span> <span class="nav-text">6 有限状态机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E6%8F%90%E9%AB%98%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD"><span class="nav-number">7.</span> <span class="nav-text">7 提高服务器性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%A0"><span class="nav-number">7.1.</span> <span class="nav-text">池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6"><span class="nav-number">7.2.</span> <span class="nav-text">数据复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2%E5%92%8C%E9%94%81"><span class="nav-number">7.3.</span> <span class="nav-text">上下文切换和锁</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LINUX网络编程-高性能服务器程序框架
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-21 20:46:06" itemprop="dateCreated datePublished" datetime="2021-08-21T20:46:06+08:00">2021-08-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-09-10 20:23:32" itemprop="dateModified" datetime="2021-09-10T20:23:32+08:00">2021-09-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">网络编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-服务器模型"><a href="#1-服务器模型" class="headerlink" title="1 服务器模型"></a>1 服务器模型</h1><h2 id="1-1-C-S模型"><a href="#1-1-C-S模型" class="headerlink" title="1.1 C/S模型"></a>1.1 C/S模型</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>服务端/客户端</th>
+<th>程序逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务端</td>
+<td>创建一个/多个socket，并调用bind函数将之绑定到服务器感兴趣的端口上，然后调用listen函数的连接，等待客户连接</td>
+</tr>
+<tr>
+<td>客户端</td>
+<td>调用connect函数向服务器发送连接。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>以下是他们的工作流程图：</p>
+<p><img src="https://z3.ax1x.com/2021/08/21/fxHIRx.png" alt="image"></p>
+<p>C/S模型适用于资源相对集中的场合，但访问量过大时，可能客户都会得到很慢的相应。</p>
+<h2 id="1-2-P2P模型"><a href="#1-2-P2P模型" class="headerlink" title="1.2 P2P模型"></a>1.2 P2P模型</h2><p>点对点的服务。每台主机可以承担着客户端和服务器的双重角色。</p>
+<p><img src="https://z3.ax1x.com/2021/08/21/fxbJYR.png" alt="image"></p>
+<h1 id="2-服务器编程框架"><a href="#2-服务器编程框架" class="headerlink" title="2 服务器编程框架"></a>2 服务器编程框架</h1><p>一个服务器的基本框架大致如图所示：</p>
+<p><img src="https://z3.ax1x.com/2021/08/21/fxba6K.png" alt="image"></p>
+<p>它分为以下三个部分：</p>
+<h2 id="2-1-I-O处理单元"><a href="#2-1-I-O处理单元" class="headerlink" title="2.1 I/O处理单元"></a>2.1 I/O处理单元</h2><p>用于管理客户连接的模块。它一般要完成以下的操作：</p>
+<ol>
+<li>等待并接受新的客户连接</li>
+<li>接受客户数据</li>
+<li>将服务器响应数据返回给客户端</li>
+</ol>
+<h2 id="2-2-逻辑单元"><a href="#2-2-逻辑单元" class="headerlink" title="2.2 逻辑单元"></a>2.2 逻辑单元</h2><p>用来分析和处理客户数据，并将结果传递给I/O处理单元或者发送给客户端。</p>
+<h2 id="2-3-网络存储单元"><a href="#2-3-网络存储单元" class="headerlink" title="2.3 网络存储单元"></a>2.3 网络存储单元</h2><p>数据库、缓存或者文件。用来存储用户的数据。</p>
+<h1 id="3-I-O模型"><a href="#3-I-O模型" class="headerlink" title="3 I/O模型"></a>3 I/O模型</h1><p>包括四种I/O模型：</p>
+<h2 id="3-1-阻塞I-O"><a href="#3-1-阻塞I-O" class="headerlink" title="3.1 阻塞I/O"></a>3.1 阻塞I/O</h2><h2 id="3-2-I-O复用"><a href="#3-2-I-O复用" class="headerlink" title="3.2 I/O复用"></a>3.2 I/O复用</h2><h2 id="3-3-SIGIO信号"><a href="#3-3-SIGIO信号" class="headerlink" title="3.3 SIGIO信号"></a>3.3 SIGIO信号</h2><h2 id="3-4-异步I-O"><a href="#3-4-异步I-O" class="headerlink" title="3.4 异步I/O"></a>3.4 异步I/O</h2><h2 id="总结：四种I-O模型的优劣"><a href="#总结：四种I-O模型的优劣" class="headerlink" title="总结：四种I/O模型的优劣"></a>总结：四种I/O模型的优劣</h2><p><img src="https://z3.ax1x.com/2021/08/21/fxLNqO.png" alt="image"></p>
+<h1 id="4-事件处理模式"><a href="#4-事件处理模式" class="headerlink" title="4 事件处理模式"></a>4 事件处理模式</h1><h2 id="4-1-reactor模式"><a href="#4-1-reactor模式" class="headerlink" title="4.1 reactor模式"></a>4.1 reactor模式</h2><p>在reactor模式里，主线程（即IO处理单元）仅负责监听文件描述符上是否有时间发生。<br>如果有，那么会将该时间通知工作线程（逻辑单元），除此之外，主线程不会做任何事。</p>
+<p>具体工作流程如下:</p>
+<ol>
+<li>主线程往epool内核时间表中注册socket上读就绪事件。</li>
+<li>主线程调用epoll_wait等待socket上可写</li>
+<li>socket上有数据可读时，epoll_wait通知主线程，主线程将socket刻度事件放入请求队列</li>
+<li>工作进程被唤醒，并从socket读取数据，处理客户请求。</li>
+<li>主线程调用eppll_wait等待socket可写</li>
+<li>socket可写时，epoll_wait通知主线程。主线程将socket可写事件放入请求队列</li>
+<li>工作线程唤醒，往socket上写入服务器处理客户请求的结果。</li>
+</ol>
+<p><img src="https://z3.ax1x.com/2021/09/10/hvP4jP.png" alt="image"></p>
+<h2 id="4-2-proactor模式"><a href="#4-2-proactor模式" class="headerlink" title="4.2 proactor模式"></a>4.2 proactor模式</h2><p>Proactor模式将所有的I/O操作都会交给主线程和内核进程来处理，而工作进程只负责与socket对接。</p>
+<p><img src="https://z3.ax1x.com/2021/09/10/hvP4jP.png" alt="image"></p>
+<h2 id="4-3-模拟proactor模式"><a href="#4-3-模拟proactor模式" class="headerlink" title="4.3 模拟proactor模式"></a>4.3 模拟proactor模式</h2><p>采用同步I/O方式模拟处Proactor模式,。 其原理是，主线程执行数据读写操作，读写完成后，主线程向工作线程通知读写完成。</p>
+<p><img src="https://z3.ax1x.com/2021/09/10/hvETYD.png" alt="image"></p>
+<h1 id="5-并发模式"><a href="#5-并发模式" class="headerlink" title="5 并发模式"></a>5 并发模式</h1><h2 id="5-1-半同步-半异步模式"><a href="#5-1-半同步-半异步模式" class="headerlink" title="5.1 半同步/半异步模式"></a>5.1 半同步/半异步模式</h2><p><img src="https://z3.ax1x.com/2021/09/10/hvVMp4.png" alt="image"></p>
+<p><img src="https://z3.ax1x.com/2021/09/10/hvVd9e.png" alt="image"></p>
+<h3 id="半同步-半反应堆模式"><a href="#半同步-半反应堆模式" class="headerlink" title="半同步-半反应堆模式"></a>半同步-半反应堆模式</h3><p><img src="https://z3.ax1x.com/2021/09/10/hvV0cd.png" alt="image"></p>
+<h3 id="高效半同步-半异步模式"><a href="#高效半同步-半异步模式" class="headerlink" title="高效半同步-半异步模式"></a>高效半同步-半异步模式</h3><p><img src="https://z3.ax1x.com/2021/09/10/hveL6J.png" alt="image"></p>
+<h2 id="5-2-领导者-追随者模式"><a href="#5-2-领导者-追随者模式" class="headerlink" title="5.2 领导者/追随者模式"></a>5.2 领导者/追随者模式</h2><h1 id="6-有限状态机"><a href="#6-有限状态机" class="headerlink" title="6 有限状态机"></a>6 有限状态机</h1><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">states</span> &#123;</span>ST_INIT, ST_END, ST_A, ST_B, ST_C, ST_D&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StateMachine__</span>&#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> state;</span><br><span class="line">    <span class="built_in">StateMachine__</span>() : <span class="built_in">state</span>(ST_INIT)&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        state = ST_INIT;</span><br><span class="line">        <span class="keyword">while</span>(state != ST_END) &#123;</span><br><span class="line">            package _pack = <span class="built_in">getNewPackage</span>();</span><br><span class="line">            <span class="built_in"><span class="keyword">switch</span></span>(state) &#123;</span><br><span class="line">                <span class="keyword">case</span> ST_A:</span><br><span class="line">                    <span class="built_in">process_pacage_state_A</span>(_pack);</span><br><span class="line">                    state = ST_B;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> ST_B:</span><br><span class="line">                    <span class="built_in">process_pacage_state_B</span>(_pack);</span><br><span class="line">                    state = ST_C;</span><br><span class="line">                    <span class="keyword">break</span>；</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>一个例子： 解析http请求的读取和分析</p>
+<h1 id="7-提高服务器性能"><a href="#7-提高服务器性能" class="headerlink" title="7 提高服务器性能"></a>7 提高服务器性能</h1><h2 id="池"><a href="#池" class="headerlink" title="池"></a>池</h2><p>采用进程池和线程池，事先就创建好一系列进程和线程。</p>
+<h2 id="数据复制"><a href="#数据复制" class="headerlink" title="数据复制"></a>数据复制</h2><h2 id="上下文切换和锁"><a href="#上下文切换和锁" class="headerlink" title="上下文切换和锁"></a>上下文切换和锁</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag"># 网络编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E7%A8%8B%E5%BA%8F%E8%A7%84%E8%8C%83/" rel="prev" title="LINUX网络编程-服务器的程序规范">
+                  <i class="fa fa-chevron-left"></i> LINUX网络编程-服务器的程序规范
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E5%A4%9A%E8%BF%9B%E7%A8%8B%E7%BC%96%E7%A8%8B/" rel="next" title="LINUX网络编程-多进程编程">
+                  LINUX网络编程-多进程编程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

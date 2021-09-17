@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="基本概念分页存储的基本思想： 把内存分成一个一个相等的小分区，再按照分区大小把进程拆分成一个个小部分以下是一些基本概念：         概念 内容     页框 将内存空间分成的一个个大小相等的分区   页框号 每个页框的编号，从0开始   页 用户进程的地址空间被划分成的，与页框大小相等的区域   页号 页面的编号，也从0开始     进程的最后一个页面可能没有页框那么大。页框不能太大，否则可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分页技术及其原理">
+<meta property="og:url" content="http://example.com/2021/06/26/memeory-note-2/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="基本概念分页存储的基本思想： 把内存分成一个一个相等的小分区，再按照分区大小把进程拆分成一个个小部分以下是一些基本概念：         概念 内容     页框 将内存空间分成的一个个大小相等的分区   页框号 每个页框的编号，从0开始   页 用户进程的地址空间被划分成的，与页框大小相等的区域   页号 页面的编号，也从0开始     进程的最后一个页面可能没有页框那么大。页框不能太大，否则可">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-06-26T11:05:46.000Z">
+<meta property="article:modified_time" content="2021-06-28T01:55:04.459Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/06/26/memeory-note-2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/06/26/memeory-note-2/","path":"2021/06/26/memeory-note-2/","title":"分页技术及其原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>分页技术及其原理 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B5%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">页表的概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%98%E6%8D%A2%E6%9C%BA%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">变换机构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%9C%B0%E5%9D%80%E5%8F%98%E6%8D%A2%E6%9C%BA%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">基本地址变换机构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E6%9C%89%E5%BF%AB%E8%A1%A8%E7%9A%84%E5%9C%B0%E5%9D%80%E5%8F%98%E6%8D%A2%E6%9C%BA%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">具有快表的地址变换机构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86"><span class="nav-number">2.2.1.</span> <span class="nav-text">局部性原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%97%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">2.2.2.</span> <span class="nav-text">块表的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E5%9D%97%E8%A1%A8%E5%90%8E%E5%9C%B0%E5%9D%80%E7%9A%84%E6%98%A0%E5%B0%84%E8%BF%87%E7%A8%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">引入块表后地址的映射过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%A4%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">两级页表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%BA%A7%E9%A1%B5%E8%A1%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">单级页表的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">原理和逻辑地址结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E5%8F%98%E6%8D%A2%E8%BF%87%E7%A8%8B"><span class="nav-number">3.3.</span> <span class="nav-text">地址变换过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E7%BB%86%E8%8A%82"><span class="nav-number">3.4.</span> <span class="nav-text">几个细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%88%86%E6%AE%B5%E5%AD%98%E5%82%A8"><span class="nav-number">3.5.</span> <span class="nav-text">基本分段存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%AE%B5%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">3.5.1.</span> <span class="nav-text">分段的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">3.5.2.</span> <span class="nav-text">段表的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E5%8F%98%E6%8D%A2%E6%9C%BA%E5%88%B6"><span class="nav-number">3.5.3.</span> <span class="nav-text">地址变换机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%88%86%E9%A1%B5%E7%AE%A1%E7%90%86%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.5.4.</span> <span class="nav-text">与分页管理的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86"><span class="nav-number">3.6.</span> <span class="nav-text">段页式管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E9%A1%B5%E5%92%8C%E5%88%86%E6%AE%B5%E7%AE%A1%E7%90%86%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E5%88%86%E6%9E%90"><span class="nav-number">3.6.1.</span> <span class="nav-text">分页和分段管理的优缺点分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">3.6.2.</span> <span class="nav-text">段页式管理的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84"><span class="nav-number">3.6.3.</span> <span class="nav-text">逻辑地址结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E8%A1%A8%E5%92%8C%E9%A1%B5%E8%A1%A8"><span class="nav-number">3.6.4.</span> <span class="nav-text">段表和页表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%E6%9C%BA%E5%88%B6"><span class="nav-number">3.6.5.</span> <span class="nav-text">地址转换机制</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/26/memeory-note-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分页技术及其原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-26 19:05:46" itemprop="dateCreated datePublished" datetime="2021-06-26T19:05:46+08:00">2021-06-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-06-28 09:55:04" itemprop="dateModified" datetime="2021-06-28T09:55:04+08:00">2021-06-28</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>分页存储的基本思想： 把内存分成一个一个相等的小分区，再按照分区大小把进程拆分成一个个小部分<br>以下是一些基本概念：    </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页框</td>
+<td>将内存空间分成的一个个大小相等的分区</td>
+</tr>
+<tr>
+<td>页框号</td>
+<td>每个页框的编号，从0开始</td>
+</tr>
+<tr>
+<td>页</td>
+<td>用户进程的地址空间被划分成的，与页框大小相等的区域</td>
+</tr>
+<tr>
+<td>页号</td>
+<td>页面的编号，也从0开始</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>进程的最后一个页面可能没有页框那么大。页框不能太大，否则可能会产生太大的内部碎片。页框不能太大，否则会产生太大的内部碎片。<br>操作系统一页框为单位为各个进程分配内存空间。进程的每个页面分别放入页框当中。也就是说，进程的页面和内存的页面具有一一对应的关系。        </p>
+<p>动态重定位方式——重定位寄存器    </p>
+<p><strong>地址如何转换？</strong></p>
+<ol>
+<li>算出逻辑地址对应的页号</li>
+<li>算出页号在页面内存中的起始地址</li>
+<li>算出逻辑地址在页面内的偏移量</li>
+<li>物理地址 = 页面起始地址+页面偏移量</li>
+</ol>
+<p>计算方法：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">页号 = 逻辑地址 / 页面场地</span><br><span class="line">页内偏移量 = 逻辑地址 % 页面长度</span><br><span class="line">逻辑地址 = [页号，页内偏移量]</span><br><span class="line">页面长度一般会是2 的整数次幂</span><br></pre></td></tr></table></figure></p>
+<h2 id="页表的概念"><a href="#页表的概念" class="headerlink" title="页表的概念"></a>页表的概念</h2><p>为了能够知道进程的每个页面在内存中的存放位置，操作系统需要为每个进程建立一张页表。</p>
+<p>特性：</p>
+<ol>
+<li>一个进程对应一张页表</li>
+<li>进程的每一页对应一个页表项</li>
+<li>每个页表项由页号和页框号组成</li>
+<li>页表记录了进程页面和实际存放的页框之间的对应关系</li>
+</ol>
+<p><strong>页表项的长度是相同的，但页号是隐含的。</strong>只需要知道页表存放的起始地址和页表项的长度，就可以找到各个页号对应的页表项存放的位置。</p>
+<h1 id="变换机构"><a href="#变换机构" class="headerlink" title="变换机构"></a>变换机构</h1><h2 id="基本地址变换机构"><a href="#基本地址变换机构" class="headerlink" title="基本地址变换机构"></a>基本地址变换机构</h2><p>用于实现逻辑地址到物理地址之间的转换的机构。<br>系统当中一般有一个页表寄存器，用来存放页表在内存中的起始地址和页表的长度，进程没有执行的时候，页表的起始地址和页表的长度会放在PCB中，进程被调度的时候，才做系统内核会将之存放到页表寄存器中。</p>
+<p>整体过程如下：</p>
+<ol>
+<li>根据逻辑地址计算出页号、页内偏移量</li>
+<li>判断页号是否越界</li>
+<li>查询页表，并找到页号对应的页表项，确定页面存放的页框号</li>
+<li>通过页框号和页内偏移量计算得到物理地址。</li>
+</ol>
+<p>例如：</p>
+<p>页面大小为L，逻辑地址A到物理地址E的变换过程：</p>
+<ol>
+<li>计算页号P和页内偏移量W。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">P = A/L;</span><br><span class="line">W = A%W;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>根据页号P和页表长度M判断是否越界<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(P&gt;=M)&#123;</span><br><span class="line">    <span class="built_in">error</span>(<span class="string">&quot;interrupt&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>查询页表</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PT = PT.begin +PT.number * len;</span><br><span class="line"><span class="comment">//页表项地址 = 页表起始地址+页号*页表项长度</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>计算物理地址<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">b = PT;</span><br><span class="line">E = b * L +W;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>页式管理中的地址是一维的。</p>
+<h2 id="具有快表的地址变换机构"><a href="#具有快表的地址变换机构" class="headerlink" title="具有快表的地址变换机构"></a>具有快表的地址变换机构</h2><h3 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>局部性原理</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间局部性</td>
+<td>执行了程序中的某条指令，那么该指令不久后可能会被再次执行；数据被访问过，这个数据可能还会被访问过。</td>
+</tr>
+<tr>
+<td>空间局部性</td>
+<td>某个存储单元被访问过，其附近的存储单元也有可能会被访问。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>由于局部性原理，某个页表项可能会被连续很多次查到。</p>
+<h3 id="块表的概念"><a href="#块表的概念" class="headerlink" title="块表的概念"></a>块表的概念</h3><p><strong>快表</strong>也称联想寄存器（TLB），是一种访问速度逼内存块很多的高速缓存。用来存放当前访问的若干页表项，以加速地址变换的过程。相应地，内存中的页表便称为<strong>慢表</strong>。<br>根据局部性原理，快表会存储最近访问过的页表和对应页框号。</p>
+<h3 id="引入块表后地址的映射过程"><a href="#引入块表后地址的映射过程" class="headerlink" title="引入块表后地址的映射过程"></a>引入块表后地址的映射过程</h3><p>引入快表之后，会现在快表中进行查询，如果查询得到对应的页表号（或称为<strong>命中</strong>），那么可以直接根据页号和页框号计算得到物理地址。否则，就需要访问内存（<strong>慢表</strong>），继续查询页框号。</p>
+<ol>
+<li>CPU给出逻辑地址，计算得到页号和页内偏移量，将页号和快表中的页号进行比较。</li>
+<li>找到了匹配的页号（快表命中），直接查询得到对应的内存块号，并由此计算得到物理地址即可。<strong>这个时候只需要一次访存即可</strong></li>
+<li>如果没有命中，那么在内存中查询内存块号，由此计算物理地址。<strong>这个时候需要两次访存</strong>，需要访问一次快表和一次慢表</li>
+<li>在找到页表项之后，应该同时将其存入快表，以便后面可能发生的再次访存。如果快表已满，则需要进行快表的更新。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>机构</th>
+<th>访问一个逻辑地址需要的访存次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基本地址变换机构</td>
+<td>两次访存</td>
+</tr>
+<tr>
+<td>具有快表的地址变换机构</td>
+<td>若命中为一次访存，未命中为两次访存</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="两级页表"><a href="#两级页表" class="headerlink" title="两级页表"></a>两级页表</h1><h2 id="单级页表的问题"><a href="#单级页表的问题" class="headerlink" title="单级页表的问题"></a>单级页表的问题</h2><ol>
+<li>页表必须连续存放，因此当页表很大时，需要占用很多个连续的页框。</li>
+<li>根据局部性原理，没有必要让整个页表常驻内存。</li>
+</ol>
+<p>一种解决方法是，可以再建立一层页表，叫做页目录表，用来描述各个耳机页表之间的页表号和对应二级页表的地址的关系。</p>
+<h2 id="原理和逻辑地址结构"><a href="#原理和逻辑地址结构" class="headerlink" title="原理和逻辑地址结构"></a>原理和逻辑地址结构</h2><p>将一个孤立的大页表拆分程数个小页表，再用一个<strong>页目录表</strong>建立小页表的索引关系。<br>这样地址结构如下：<br>31…22|21…12|11…0<br>—-|—-|—-<br>一级页号|二级页号|页内偏移量</p>
+<h2 id="地址变换过程"><a href="#地址变换过程" class="headerlink" title="地址变换过程"></a>地址变换过程</h2><ol>
+<li>按照地址结构将逻辑地址拆分成三个部分</li>
+<li>从PCB中读取页目录表初始地址，然后根据以及页号查页目录表</li>
+<li>根据二级页号查表，找到最终项访问的内存块号</li>
+<li>结合页内偏移量得到物理地址</li>
+</ol>
+<h2 id="几个细节"><a href="#几个细节" class="headerlink" title="几个细节"></a>几个细节</h2><ol>
+<li>若采用多级页表机制，各级页表的大小不能超过一个页面</li>
+<li>不含快表机构的N级页表，其访存次数为N+1次。如果采用了快表，就可以省下至少一次访存次数。</li>
+</ol>
+<h2 id="基本分段存储"><a href="#基本分段存储" class="headerlink" title="基本分段存储"></a>基本分段存储</h2><h3 id="分段的概念"><a href="#分段的概念" class="headerlink" title="分段的概念"></a>分段的概念</h3><p>将进程的地址空间按照自身的逻辑关系分为多个若干个段，每个段都有一个段名（由程序员决定—），每段都从0开始编址</p>
+<p>分段系统的逻辑地址由段号和段内地址构成：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>31…16</th>
+<th>15…0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>段号</td>
+<td>段内地址</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>短号的位数绝顶了每个进程最多可以分极端，段内地址的位数决定了每个段的最大长度是多少。</p>
+<h3 id="段表的概念"><a href="#段表的概念" class="headerlink" title="段表的概念"></a>段表的概念</h3><p>进程段的位置与物理内存之间的映射表。</p>
+<h3 id="地址变换机制"><a href="#地址变换机制" class="headerlink" title="地址变换机制"></a>地址变换机制</h3><h3 id="与分页管理的关系"><a href="#与分页管理的关系" class="headerlink" title="与分页管理的关系"></a>与分页管理的关系</h3><ol>
+<li>页是信息的物理单位，对用户是不可见的</li>
+<li>段是信息的逻辑单位，分段对用户是可见的。</li>
+<li>分页的用户进程是一维的。</li>
+<li>分段的用户进程是二维的。</li>
+</ol>
+<h2 id="段页式管理"><a href="#段页式管理" class="headerlink" title="段页式管理"></a>段页式管理</h2><h3 id="分页和分段管理的优缺点分析"><a href="#分页和分段管理的优缺点分析" class="headerlink" title="分页和分段管理的优缺点分析"></a>分页和分段管理的优缺点分析</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>管理模式</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分页管理</td>
+<td>内存空间利用率高，不产生外部碎片</td>
+<td>不方便按照逻辑模块实现西悉尼的共享保护</td>
+</tr>
+<tr>
+<td>分段管理</td>
+<td>方便按照逻辑模块实现信息的共享保护</td>
+<td>段擦汗给你过大，为其分配很大的连续空间不方便，段式管理会产生外部碎片。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="段页式管理的概念"><a href="#段页式管理的概念" class="headerlink" title="段页式管理的概念"></a>段页式管理的概念</h3><p>基本思想：将进程按照逻辑模块分段，再将各段分页，再将内存空间分为大小相同的内存块。进程钱将各个页面分别装入各个内存块中。</p>
+<h3 id="逻辑地址结构"><a href="#逻辑地址结构" class="headerlink" title="逻辑地址结构"></a>逻辑地址结构</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>31…16</th>
+<th>15…12</th>
+<th>11…0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>段号</td>
+<td>页号</td>
+<td>页内偏移量</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="段表和页表"><a href="#段表和页表" class="headerlink" title="段表和页表"></a>段表和页表</h3><p>段号、页表长度、页表存放块号。<br>每个段表项的长度相等，段号是隐含的。</p>
+<h3 id="地址转换机制"><a href="#地址转换机制" class="headerlink" title="地址转换机制"></a>地址转换机制</h3><ol>
+<li>根据逻辑地址得到段号、页号、页内偏移量</li>
+<li>判断段号是否越界</li>
+<li><strong>在段表内查询段表项</strong>(第一次访存)</li>
+<li>判断页号是否越界</li>
+<li>根据页表存放块号，页号查询页表，找到对应页表项</li>
+<li><strong>根据内存块号，业内偏移量得到最终的物理地址</strong>（第二次访存）</li>
+<li><strong>访问目标内存单元</strong>（第三次访存）</li>
+</ol>
+<p>在这样一个地址转换机制当中，发生了三次访存。如果引入快表机制，用段号和页号作为快表关键字，那么就只需要至少一次访存。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/26/process-note/" rel="prev" title="进程、线程">
+                  <i class="fa fa-chevron-left"></i> 进程、线程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/27/memeory-note-3/" rel="next" title="虚拟内存技术">
+                  虚拟内存技术 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

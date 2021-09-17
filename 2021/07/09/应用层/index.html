@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="定义应用层堆应用程序的通信提供服务。 应用层协议的定义包括：  应用进程交换的报文类型 报文类型的语法 字段的语义 进程对发送报文的时机、响应报文的需求的规则。  应用程序的体系结构客户-服务器体系结构在这个模型中，总存在一个打开的主机，称为服务器,用于服务来自其他称为客户机的请求。客户机之间不会相互通信。 P2P结构也称为对等结构。任意间断链接的主机对（对等方），直接相互通信。流量密集型。扩展性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络笔记：应用层">
+<meta property="og:url" content="http://example.com/2021/07/09/%E5%BA%94%E7%94%A8%E5%B1%82/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="定义应用层堆应用程序的通信提供服务。 应用层协议的定义包括：  应用进程交换的报文类型 报文类型的语法 字段的语义 进程对发送报文的时机、响应报文的需求的规则。  应用程序的体系结构客户-服务器体系结构在这个模型中，总存在一个打开的主机，称为服务器,用于服务来自其他称为客户机的请求。客户机之间不会相互通信。 P2P结构也称为对等结构。任意间断链接的主机对（对等方），直接相互通信。流量密集型。扩展性">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1609256929-PgwBxP-image.png">
+<meta property="og:image" content="https://www.ituring.com.cn/figures/2014/PIC%20HTTP/06.d02z.024.png">
+<meta property="article:published_time" content="2021-07-09T14:38:59.000Z">
+<meta property="article:modified_time" content="2021-07-19T08:58:00.327Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.leetcode-cn.com/1609256929-PgwBxP-image.png">
+
+
+<link rel="canonical" href="http://example.com/2021/07/09/%E5%BA%94%E7%94%A8%E5%B1%82/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/07/09/%E5%BA%94%E7%94%A8%E5%B1%82/","path":"2021/07/09/应用层/","title":"计算机网络笔记：应用层"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>计算机网络笔记：应用层 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">应用程序的体系结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7-%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">客户-服务器体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P2P%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">P2P结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1"><span class="nav-number">3.</span> <span class="nav-text">进程间的通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9B%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">客户和服务器进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E9%97%B4%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.2.</span> <span class="nav-text">进程和计算机网络之间的接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%AF%BB%E5%9D%80"><span class="nav-number">3.3.</span> <span class="nav-text">进程的寻址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%BE%93%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">运输服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E8%8C%83%E7%95%B4"><span class="nav-number">4.1.</span> <span class="nav-text">服务范畴</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.2.</span> <span class="nav-text">TCP服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.3.</span> <span class="nav-text">UDP服务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP"><span class="nav-number">5.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5%E5%92%8C%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.1.</span> <span class="nav-text">非持续连接和持续连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E6%8C%81%E4%B9%85%E9%93%BE%E6%8E%A5"><span class="nav-number">5.1.1.</span> <span class="nav-text">非持久链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E9%93%BE%E6%8E%A5"><span class="nav-number">5.1.2.</span> <span class="nav-text">持久链接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="nav-number">5.2.</span> <span class="nav-text">报文格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87"><span class="nav-number">5.2.1.</span> <span class="nav-text">HTTP请求报文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87"><span class="nav-number">5.2.2.</span> <span class="nav-text">响应报文</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie"><span class="nav-number">5.3.</span> <span class="nav-text">cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web%E7%BC%93%E5%AD%98%E2%80%94%E2%80%94%E6%88%96%E8%80%85%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">5.4.</span> <span class="nav-text">web缓存——或者代理服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6Get%E6%96%B9%E6%B3%95"><span class="nav-number">5.5.</span> <span class="nav-text">条件Get方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FTP"><span class="nav-number">6.</span> <span class="nav-text">FTP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FTP%E7%89%B9%E5%BE%81"><span class="nav-number">6.1.</span> <span class="nav-text">FTP特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">工作原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS"><span class="nav-number">7.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS%E6%8F%90%E4%BE%9B%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.1.</span> <span class="nav-text">DNS提供的服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS%E5%B7%A5%E4%BD%9C%E6%9C%BA%E7%90%86"><span class="nav-number">7.2.</span> <span class="nav-text">DNS工作机理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E3%80%81%E5%B1%82%E6%AC%A1%E5%BC%8F%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">7.2.1.</span> <span class="nav-text">分布式、层次式的数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS%E7%BC%93%E5%AD%98"><span class="nav-number">7.2.2.</span> <span class="nav-text">DNS缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS%E8%AE%B0%E5%BD%95%E5%92%8C%E6%8A%A5%E6%96%87"><span class="nav-number">7.2.3.</span> <span class="nav-text">DNS记录和报文</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/09/%E5%BA%94%E7%94%A8%E5%B1%82/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络笔记：应用层
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-07-09 22:38:59" itemprop="dateCreated datePublished" datetime="2021-07-09T22:38:59+08:00">2021-07-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-07-19 16:58:00" itemprop="dateModified" datetime="2021-07-19T16:58:00+08:00">2021-07-19</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>应用层堆应用程序的通信提供服务。</p>
+<p>应用层协议的定义包括：</p>
+<ol>
+<li>应用进程交换的报文类型</li>
+<li>报文类型的语法</li>
+<li>字段的语义</li>
+<li>进程对发送报文的时机、响应报文的需求的规则。</li>
+</ol>
+<h1 id="应用程序的体系结构"><a href="#应用程序的体系结构" class="headerlink" title="应用程序的体系结构"></a>应用程序的体系结构</h1><h2 id="客户-服务器体系结构"><a href="#客户-服务器体系结构" class="headerlink" title="客户-服务器体系结构"></a>客户-服务器体系结构</h2><p>在这个模型中，总存在一个打开的主机，称为<strong>服务器</strong>,用于服务来自其他称为<strong>客户机</strong>的请求。<br>客户机之间不会相互通信。</p>
+<h2 id="P2P结构"><a href="#P2P结构" class="headerlink" title="P2P结构"></a>P2P结构</h2><p>也称为对等结构。任意间断链接的主机对（<strong>对等方</strong>），直接相互通信。<br>流量密集型。扩展性。需要注意安全。</p>
+<h1 id="进程间的通信"><a href="#进程间的通信" class="headerlink" title="进程间的通信"></a>进程间的通信</h1><h2 id="客户和服务器进程"><a href="#客户和服务器进程" class="headerlink" title="客户和服务器进程"></a>客户和服务器进程</h2><h2 id="进程和计算机网络之间的接口"><a href="#进程和计算机网络之间的接口" class="headerlink" title="进程和计算机网络之间的接口"></a>进程和计算机网络之间的接口</h2><h2 id="进程的寻址"><a href="#进程的寻址" class="headerlink" title="进程的寻址"></a>进程的寻址</h2><h1 id="运输服务"><a href="#运输服务" class="headerlink" title="运输服务"></a>运输服务</h1><h2 id="服务范畴"><a href="#服务范畴" class="headerlink" title="服务范畴"></a>服务范畴</h2><ol>
+<li>可靠数据传输</li>
+<li>吞吐量</li>
+<li>定时</li>
+<li>保证安全性</li>
+</ol>
+<h2 id="TCP服务"><a href="#TCP服务" class="headerlink" title="TCP服务"></a>TCP服务</h2><p>提供服务：</p>
+<ol>
+<li>面向连接的服务。使用TCP协议的时候，在应用层数据报文开始流动之前，其客户机程序和服务器程序之间互相交换运输层的控制信息。</li>
+<li>可靠的数据传输服务</li>
+</ol>
+<h2 id="UDP服务"><a href="#UDP服务" class="headerlink" title="UDP服务"></a>UDP服务</h2><h1 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h1><p>超文本传输协议(HyperText Transfer Protocol,HTTP)，是Web的核心。它有两部分程序实现，一个是客户机程序，另一个是服务器程序，这两个程序通过交换HTTP报文进行会话。<br>HTTP使用TCP作为运输层协议。HTTP客户机发起一个和服务器的TCP链接，一旦链接建立，浏览器和服务器进程就可以通过套接字接口访问TCP。<br>HTTP是<strong>无状态协议</strong>，服务端不会存储客户端的任何状态。</p>
+<ol>
+<li>浏览器分析URL</li>
+<li>浏览器向DNS请求解析IP地址</li>
+<li>DNS解析IP地址</li>
+<li>浏览器于服务器建立TCP连接</li>
+<li>浏览器向服务器发出GET方法</li>
+<li>服务器响应</li>
+<li>TCP连接释放</li>
+<li>浏览器显示</li>
+</ol>
+<h2 id="非持续连接和持续连接"><a href="#非持续连接和持续连接" class="headerlink" title="非持续连接和持续连接"></a>非持续连接和持续连接</h2><p>客户端进程和服务器进程之间可以采用两种方式进行链接。称为持久链接和非持久链接。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>连接方式</th>
+<th>特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>持久链接</td>
+<td>每一个请求一个接一个地被发出，每个请求都对应一个但对的TCP链接。</td>
+</tr>
+<tr>
+<td>非持久链接</td>
+<td>所有的请求都会经过相同的TCP链接发出。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="非持久链接"><a href="#非持久链接" class="headerlink" title="非持久链接"></a>非持久链接</h3><h3 id="持久链接"><a href="#持久链接" class="headerlink" title="持久链接"></a>持久链接</h3><ol>
+<li>客户机进程在80端口发起一个到服务器的TCP链接。客户机和服务器上分别有一个套接字与之相关联。</li>
+<li>客户机经过它的套接字相服务器发送一个HTTP请求报文。</li>
+<li>服务器进程经过它的套接字接受请求报文。从存储器中寻找请求的对象，在响应报文中封装对象，并通过套接字相客户机发送响应报文。</li>
+<li>HTTP服务器进程通知TCP断开连接。</li>
+<li>HTTP客户机接受响应报文，TCP连接管壁。客户机从响应报文中提取文件。</li>
+</ol>
+<p>RTT：一个小的分组从客户机到服务器再回到客户机所花费的时间。</p>
+<h2 id="报文格式"><a href="#报文格式" class="headerlink" title="报文格式"></a>报文格式</h2><h3 id="HTTP请求报文"><a href="#HTTP请求报文" class="headerlink" title="HTTP请求报文"></a>HTTP请求报文</h3><p>以下是一个典型的请求报文：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET /somedir/page.hetml HTTP/1.1        //请求行：包括方法字段、URL字段和HTTP协议版本字段</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>www.where.com                     //首部行</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close                       //采用非之久连接</span><br><span class="line"><span class="attribute">User-agent</span><span class="punctuation">: </span>Mozilla/4.0                 //定义用户代理</span><br><span class="line"><span class="attribute">Accept-language</span><span class="punctuation">: </span>fr                     //网页语言版本</span><br></pre></td></tr></table></figure>
+<p>通用格式如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;方法&gt; sp <span class="tag">&lt;<span class="name">URL</span>&gt;</span> sp &lt;版本&gt;   //请求行</span><br><span class="line">&lt;首部字段名&gt;sp&lt;值&gt;cr lf      //首部行</span><br><span class="line">...</span><br><span class="line">&lt;首部字段名&gt;sp&lt;值&gt;cr lf</span><br><span class="line">cr lf                       //空行</span><br><span class="line">//以下都是实体主体</span><br></pre></td></tr></table></figure></p>
+<p>使用GET方法时，实体主体是空的。只有采用POST方法，即用户向客户端传输信息时，实体主体中会包含用户希望传输的信息。</p>
+<h3 id="响应报文"><a href="#响应报文" class="headerlink" title="响应报文"></a>响应报文</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK             //初始状态行，包括协议版本，状态码状态信息</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close           //首部行</span><br><span class="line"><span class="attribute">Date</span>:</span><br><span class="line"><span class="attribute">Server</span>:</span><br><span class="line"><span class="attribute">Last-Modified</span>:</span><br><span class="line"><span class="attribute">Content-Length</span>:</span><br><span class="line"><span class="attribute">Content-Type</span>:</span><br><span class="line"></span><br><span class="line"><span class="armasm">&lt;<span class="meta">data</span>&gt;                      <span class="comment">//实体主体</span></span></span><br></pre></td></tr></table></figure>
+<p>常见的状态码：用于标记当前服务器的状态，指示了请求的结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>请求成功</td>
+</tr>
+<tr>
+<td>301</td>
+<td>请求对象被永久转移</td>
+</tr>
+<tr>
+<td>400</td>
+<td>请求不能被服务器理解</td>
+</tr>
+<tr>
+<td>404</td>
+<td>请求文档不存在</td>
+</tr>
+<tr>
+<td>505</td>
+<td>服务器不支持请求报文使用的HTTP的协议版本。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>状态码|含义<br>1<strong>|接受的请求正在处理<br>2</strong>|请求正常处理完毕<br>3<strong>|需要进行附加操作以完成请求<br>4</strong>|服务器无法处理请求<br>5**|服务器请求处理出错</p>
+<h2 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h2><p>cooke是服务器用来跟踪用户的技术。它包含了四个部分：</p>
+<ol>
+<li>http响应报文中有一个cookie首部行 Set-cookie: &lt;&gt;</li>
+<li>http请求报文中有一个cookie首部行 Cookie: &lt;&gt;</li>
+<li>用户端系统中有一个cookie文件，由用户的浏览器处理。</li>
+<li>web站点后由一个后端数据库。</li>
+</ol>
+<p>没有Cookie信息下的状态请求：<br><img src="https://pic.leetcode-cn.com/1609256929-PgwBxP-image.png" alt="image"><br>有Cookie信息状态下的请求：<br><img src="https://www.ituring.com.cn/figures/2014/PIC%20HTTP/06.d02z.024.png" alt="image"></p>
+<p>采用了Cookie技术下的请求报文和响应报文：</p>
+<ol>
+<li>没有Cookie时，请求报文</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/reader/</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>hackr.jp</span><br><span class="line">*首部字段内没有Cookie的相关信息</span><br></pre></td></tr></table></figure>
+<ol>
+<li>服务端生成Cookie</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Thu, 12 Jul 2012 07:12:20 GMT</span><br><span class="line"><span class="attribute">Server</span><span class="punctuation">: </span>Apache</span><br><span class="line">＜Set-Cookie: sid=1342077140226724; path=/; expires=Wed,</span><br><span class="line">10-Oct-12 07:12:20 GMT＞</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/plain; charset=UTF-8</span><br></pre></td></tr></table></figure>
+<ol>
+<li>自动发送保存的Cookie</li>
+</ol>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/image/</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>hackr.jp</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>sid=1342077140226724</span><br></pre></td></tr></table></figure>
+<h2 id="web缓存——或者代理服务器"><a href="#web缓存——或者代理服务器" class="headerlink" title="web缓存——或者代理服务器"></a>web缓存——或者代理服务器</h2><h2 id="条件Get方法"><a href="#条件Get方法" class="headerlink" title="条件Get方法"></a>条件Get方法</h2><h1 id="FTP"><a href="#FTP" class="headerlink" title="FTP"></a>FTP</h1><h2 id="FTP特征"><a href="#FTP特征" class="headerlink" title="FTP特征"></a>FTP特征</h2><p>FTP是基于客户/服务器端协议。用户需要通过一个客户机程序连接倒服务器上。</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><ol>
+<li>登录</li>
+<li>传输——使用TCP</li>
+</ol>
+<p>客户端与服务器端之间会建立两个连接，包括控制连接21，数据连接20.其中控制连接21负责传请求，数据连接20负责传数据。</p>
+<h1 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h1><h2 id="DNS提供的服务"><a href="#DNS提供的服务" class="headerlink" title="DNS提供的服务"></a>DNS提供的服务</h2><p>主要工作：主机名到IP名的转换。<br>其他服务：</p>
+<ol>
+<li>主机别名</li>
+<li>邮件服务器别名</li>
+<li>负载分配</li>
+</ol>
+<h2 id="DNS工作机理"><a href="#DNS工作机理" class="headerlink" title="DNS工作机理"></a>DNS工作机理</h2><h3 id="分布式、层次式的数据库"><a href="#分布式、层次式的数据库" class="headerlink" title="分布式、层次式的数据库"></a>分布式、层次式的数据库</h3><p>DNS具有一个分布式、层次化的数据库。它包括了：</p>
+<ol>
+<li>DNS根服务器</li>
+<li>顶级域服务器</li>
+<li>权威DNS服务器</li>
+</ol>
+<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><p>为了改善时延性能，并减少DNS报文数量，DNS采用了缓存技术。在请求域名的时候,会首先从缓存中找到这个域名。</p>
+<ol>
+<li>递归查询<br>顶级——根——权威——自己</li>
+<li>迭代查询<br>先从本地服务器查起，逐级查询</li>
+</ol>
+<h3 id="DNS记录和报文"><a href="#DNS记录和报文" class="headerlink" title="DNS记录和报文"></a>DNS记录和报文</h3>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/09/%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E5%A4%A7%E5%88%A9%E6%B6%A6/" rel="prev" title="股票的最大利润">
+                  <i class="fa fa-chevron-left"></i> 股票的最大利润
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/09/%E6%A6%82%E8%BF%B0/" rel="next" title="计算机网络笔记：概述">
+                  计算机网络笔记：概述 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

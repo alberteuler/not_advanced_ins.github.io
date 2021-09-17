@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="gdb和cgdb这是一个在linux环境下的单独的调试工具。 完整的手册详见：cgdb中文手册 cgdb的界面命令行中键入： 1cgdb filename 即可进入cgdb。  cgdb的界面分为两部分。上半部分可以通过键入esc进入并阅览代码，下半部分可以使用gdb的命令进行调试。 gdb的常用命令要想使用gdb进行调试，则需要在编译的过程中加入12g++ -g test.cpp -o test">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cgdb的使用">
+<meta property="og:url" content="http://example.com/2021/08/15/gdb%E5%92%8Ccgdb%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="gdb和cgdb这是一个在linux环境下的单独的调试工具。 完整的手册详见：cgdb中文手册 cgdb的界面命令行中键入： 1cgdb filename 即可进入cgdb。  cgdb的界面分为两部分。上半部分可以通过键入esc进入并阅览代码，下半部分可以使用gdb的命令进行调试。 gdb的常用命令要想使用gdb进行调试，则需要在编译的过程中加入12g++ -g test.cpp -o test">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://res.cloudinary.com/dhlnczmtt/image/upload/v1629028923/OJ_S9W__EC_6H_U_NM__N_xj3gob.png">
+<meta property="article:published_time" content="2021-08-15T10:59:48.000Z">
+<meta property="article:modified_time" content="2021-08-15T12:37:20.194Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="实用工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://res.cloudinary.com/dhlnczmtt/image/upload/v1629028923/OJ_S9W__EC_6H_U_NM__N_xj3gob.png">
+
+
+<link rel="canonical" href="http://example.com/2021/08/15/gdb%E5%92%8Ccgdb%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/08/15/gdb%E5%92%8Ccgdb%E7%9A%84%E4%BD%BF%E7%94%A8/","path":"2021/08/15/gdb和cgdb的使用/","title":"cgdb的使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>cgdb的使用 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gdb%E5%92%8Ccgdb"><span class="nav-number">1.</span> <span class="nav-text">gdb和cgdb</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cgdb%E7%9A%84%E7%95%8C%E9%9D%A2"><span class="nav-number">2.</span> <span class="nav-text">cgdb的界面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gdb%E7%9A%84%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">gdb的常用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text"> </span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/15/gdb%E5%92%8Ccgdb%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cgdb的使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-08-15 18:59:48 / Modified: 20:37:20" itemprop="dateCreated datePublished" datetime="2021-08-15T18:59:48+08:00">2021-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AE%9E%E7%94%A8%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">实用工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="gdb和cgdb"><a href="#gdb和cgdb" class="headerlink" title="gdb和cgdb"></a>gdb和cgdb</h1><p>这是一个在linux环境下的单独的调试工具。</p>
+<p>完整的手册详见：<br><a target="_blank" rel="noopener" href="https://www.cntofu.com/book/121/summary_of_cgdb.md">cgdb中文手册</a></p>
+<h1 id="cgdb的界面"><a href="#cgdb的界面" class="headerlink" title="cgdb的界面"></a>cgdb的界面</h1><p>命令行中键入：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cgdb filename</span><br></pre></td></tr></table></figure>
+<p>即可进入cgdb。</p>
+<p><img src="https://res.cloudinary.com/dhlnczmtt/image/upload/v1629028923/OJ_S9W__EC_6H_U_NM__N_xj3gob.png" alt="image"></p>
+<p>cgdb的界面分为两部分。上半部分可以通过键入<code>esc</code>进入并阅览代码，下半部分可以使用gdb的命令进行调试。</p>
+<h1 id="gdb的常用命令"><a href="#gdb的常用命令" class="headerlink" title="gdb的常用命令"></a>gdb的常用命令</h1><p>要想使用gdb进行调试，则需要在编译的过程中加入<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -g test.cpp -o test</span><br><span class="line">gdb ./test</span><br></pre></td></tr></table></figure></p>
+<p>详情可见：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26399665/article/details/81165684">gdb调试基本命令</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">start                   #开始调试,停在第一行代码处,(gdb)start</span><br><span class="line">l                         #list的缩写查看源代码,(gdb) l [number/function]</span><br><span class="line">b &lt;lines&gt;           #b: Breakpoint的简写，设置断点。(gdb) b 10</span><br><span class="line">b &lt;func&gt;            #b: Breakpoint的简写，设置断点。(gdb) b main</span><br><span class="line">b filename:[line/function]  #b:在文件filename的某行或某个函数处设置断点</span><br><span class="line">i breakpoints  #i:info 的简写。(gdb)i breakpoints</span><br><span class="line">d [bpNO]        #d: Delete breakpoint的简写，删除指定编号的某个断点，或删除所有断点。断点编号从1开始递增。 (gdb)d 1</span><br><span class="line">s                     #s: step执行一行源程序代码，如果此行代码中有函数调用，则进入该函数；(gdb) s</span><br><span class="line">n                     #n: next执行一行源程序代码，此行代码中的函数调用也一并执行。(gdb) n</span><br><span class="line">r                      #Run的简写，运行被调试的程序。如果此前没有下过断点，则执行完整个程序；如果有断点，则程序暂停在第一个可用断点处。(gdb) r</span><br><span class="line">c                       #Continue的简写，继续执行被调试程序，直至下一个断点或程序结束。(gdb) c</span><br><span class="line">finish                #函数结束</span><br><span class="line">p [var]              #Print的简写，显示指定变量（临时变量或全局变量 例如 int a）的值。(gdb) p a</span><br><span class="line">display [var]                #display，设置想要跟踪的变量(例如 int a)。(gdb) display a</span><br><span class="line">undisplay [varnum]     #undisplay取消对变量的跟踪，被跟踪变量用整型数标识。(gdb) undisplay 1</span><br><span class="line">set args               #可指定运行时参数。(gdb)set args 10 20</span><br><span class="line">show args           #查看运行时参数。</span><br><span class="line">q                          #Quit的简写，退出GDB调试环境。(gdb) q </span><br><span class="line">help [cmd]           #GDB帮助命令，提供对GDB名种命令的解释说明。如果指定了“命令名称”参数，则显示该命令的详细说明；如果没有指定参数，则分类显示所有GDB命令，供用户进一步浏览和查询。(gdb)help</span><br><span class="line">回车                    #重复前面的命令，(gdb)回车</span><br></pre></td></tr></table></figure>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E5%AE%9E%E7%94%A8%E5%B7%A5%E5%85%B7/" rel="tag"># 实用工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/15/%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB/" rel="prev" title="编辑距离">
+                  <i class="fa fa-chevron-left"></i> 编辑距离
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/21/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E7%A8%8B%E5%BA%8F%E8%A7%84%E8%8C%83/" rel="next" title="LINUX网络编程-服务器的程序规范">
+                  LINUX网络编程-服务器的程序规范 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="select函数原型12#include&lt;sys&#x2F;select.h&gt;int select(int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, struct tiumeval* timeout); 各个参数的意义：参数|意义—-|—-nfds|文件描述符的总数readfds|可读事件对应的文件描述符writefd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINUX网络编程-IO复用">
+<meta property="og:url" content="http://example.com/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-1/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="select函数原型12#include&lt;sys&#x2F;select.h&gt;int select(int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, struct tiumeval* timeout); 各个参数的意义：参数|意义—-|—-nfds|文件描述符的总数readfds|可读事件对应的文件描述符writefd">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/17/4MlyYF.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/17/4M3gq1.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/17/4MGw3F.png">
+<meta property="og:image" content="https://z3.ax1x.com/2021/09/17/4MrcVS.png">
+<meta property="article:published_time" content="2021-08-29T14:19:50.000Z">
+<meta property="article:modified_time" content="2021-09-17T12:49:02.007Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="网络编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3.ax1x.com/2021/09/17/4MlyYF.png">
+
+
+<link rel="canonical" href="http://example.com/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-1/","path":"2021/08/29/LINUX网络编程-IO复用-1/","title":"LINUX网络编程-IO复用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LINUX网络编程-IO复用 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#select"><span class="nav-number">1.</span> <span class="nav-text">select</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8E%9F%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">函数原型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%9A%84%E5%B0%B1%E7%BB%AA%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">文件描述符的就绪条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%B8%A6%E5%A4%96%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.</span> <span class="nav-text">处理带外数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#poll"><span class="nav-number">2.</span> <span class="nav-text">poll</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#epoll"><span class="nav-number">3.</span> <span class="nav-text">epoll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E4%BA%8B%E4%BB%B6%E8%A1%A8"><span class="nav-number">3.1.</span> <span class="nav-text">内核事件表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#epoll-wait%E5%87%BD%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">epoll_wait函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LT%E5%92%8CET%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.3.</span> <span class="nav-text">LT和ET模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E7%BB%84IO%E5%A4%8D%E7%94%A8%E5%87%BD%E6%95%B0%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">4.</span> <span class="nav-text">三组IO复用函数的比较</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E5%BA%94%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">高级应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E9%98%BB%E5%A1%9E%E7%9A%84connect"><span class="nav-number">5.1.</span> <span class="nav-text">非阻塞的connect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%A8%8B%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">聊天室程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E5%A4%84%E7%90%86tcp%E5%92%8Cudp%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.3.</span> <span class="nav-text">同时处理tcp和udp服务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xinetd"><span class="nav-number">6.</span> <span class="nav-text">xinetd</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LINUX网络编程-IO复用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-29 22:19:50" itemprop="dateCreated datePublished" datetime="2021-08-29T22:19:50+08:00">2021-08-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-09-17 20:49:02" itemprop="dateModified" datetime="2021-09-17T20:49:02+08:00">2021-09-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">网络编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="select"><a href="#select" class="headerlink" title="select"></a>select</h1><h2 id="函数原型"><a href="#函数原型" class="headerlink" title="函数原型"></a>函数原型</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, struct tiumeval* timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>各个参数的意义：<br>参数|意义<br>—-|—-<br>nfds|文件描述符的总数<br>readfds|可读事件对应的文件描述符<br>writefds|可写事件对应的文件描述符<br>exceptfds|异常事件对应的文件描述符<br>timeout|select函数的超时时限</p>
+<p>这三个参数是fd_set指针类型。其定义如下:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;typesizes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __FD_SETSIZE 1024</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FD_SETSIZE __FD_SETSIZE</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">int</span> __fd_mask;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">undef</span> __NFDBITS</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __NFDBITS ( 8 * (int)sizeof(__fd_mask) )</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifdef</span> __USE_XOPEN</span></span><br><span class="line">        __fd_mask __fds_bits[__FD_SETSIZE /  __NFDBITS];</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> __FDS_BITS(set) ((set) -&gt; fds_bits);</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">        __fd_mask __fds_bits[__FD_SETSIZE / __NFDBITS];</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> __FDS_BITS(set) ((set) -&gt; fds_bts);    </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span>;</span></span><br><span class="line">&#125; fd_set;</span><br></pre></td></tr></table></figure>
+<p>fd_set结构体仅包含一个整形数组<code>__fds_bits</code>,这个数组的<strong>每个元素</strong> 的<strong>每一位</strong>都标记着一个文件描述符。<br>采用一系列宏来访问<code>fd_set</code>结构体中的位：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"><span class="built_in">FD_ZERO</span>(fd_set *fdset);</span><br><span class="line"><span class="built_in">FD_SET</span>(<span class="keyword">int</span> fd, fd_set *fdset);</span><br><span class="line"><span class="built_in">FD_CLR</span>(<span class="keyword">int</span> fd, fd_set *fdset);</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd, fd_set *fdset)</span></span>;</span><br></pre></td></tr></table></figure><br>用一个结构体来描述timeval位：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> &#123;</span></span><br><span class="line">    <span class="keyword">long</span> tv_sec;            <span class="comment">//秒</span></span><br><span class="line">    <span class="keyword">long</span> tv_usec;           <span class="comment">//微秒</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="文件描述符的就绪条件"><a href="#文件描述符的就绪条件" class="headerlink" title="文件描述符的就绪条件"></a>文件描述符的就绪条件</h2><p>socket可读的时候，文件描述符就绪。包括：</p>
+<p><img src="https://z3.ax1x.com/2021/09/17/4MlyYF.png" alt="image"></p>
+<h2 id="处理带外数据"><a href="#处理带外数据" class="headerlink" title="处理带外数据"></a>处理带外数据</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+<h1 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h1><p>poll在指定时间内轮询一定数量的文件描述符，以测试其中是否有就绪者。其原型如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;poll.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(struct pollfd* fds, <span class="keyword">nfds_t</span> nfds)</span></span></span><br></pre></td></tr></table></figure>
+<p>pollfd的定义如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> fd;             <span class="comment">//文件描述符</span></span><br><span class="line">    <span class="keyword">short</span> events;       <span class="comment">//注册的事件</span></span><br><span class="line">    <span class="keyword">short</span> revents;      <span class="comment">//实际发生的事件</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>events用来告诉poll监听fd上的那些事件，它是一系列事件的安慰或。revents成员由内核修改，以通知fd上实际发生了什么事件。<br>poll事件类型如下：<br><img src="https://z3.ax1x.com/2021/09/17/4M3gq1.png" alt="image"><br><img src="https://z3.ax1x.com/2021/09/17/4MGw3F.png" alt="image"></p>
+<p>nfds参数用于指定被监听事件集fds的大小。其类型定义如下：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef unsigned long int nfds_t;</span><br></pre></td></tr></table></figure></p>
+<p>timeout参数用于指定poll的超时值。单位是ms。timeout = -1时，poll调用将永远阻塞;timeout = 0时,poll会立刻返回</p>
+<h1 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h1><h2 id="内核事件表"><a href="#内核事件表" class="headerlink" title="内核事件表"></a>内核事件表</h2><p>epoll使用一组函数来完成仍无。它会将文件描述符上的事件放到内核里的时间表中。<br>epoll需要额外使用一个文件描述符来标识事件表。用epoll_create来操作。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/epoll.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>内核事件表可以用以下方法操作：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/epoll.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>epoll_event的定义如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> &#123;</span></span><br><span class="line">    <span class="keyword">__uint32_t</span> events;      <span class="comment">//epoll事件</span></span><br><span class="line">    epoll <span class="keyword">_data_t</span> data;     <span class="comment">//用户数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>epoll_data如此定义：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">union</span> <span class="title">epoll_data</span> &#123;</span></span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="keyword">uint32_t</span> u32;</span><br><span class="line">    <span class="keyword">uint64_t</span> u64;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">epoll_data_t</span>;</span><br></pre></td></tr></table></figure></p>
+<h2 id="epoll-wait函数"><a href="#epoll-wait函数" class="headerlink" title="epoll_wait函数"></a>epoll_wait函数</h2><p>在一段超市事件内等待一组文件描述符上的事件。原型如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event* events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/daaikuaichuan/article/details/88777274">详细介绍</a></p>
+<h2 id="LT和ET模式"><a href="#LT和ET模式" class="headerlink" title="LT和ET模式"></a>LT和ET模式</h2><p>epoll对文件描述符的操作由两种模式。包括：</p>
+<ul>
+<li>LT—电平出发</li>
+<li>ET—边沿出发</li>
+</ul>
+<p>ET模式可以在很大程度上降低同一个epoll被重复出发的次数。</p>
+<h1 id="三组IO复用函数的比较"><a href="#三组IO复用函数的比较" class="headerlink" title="三组IO复用函数的比较"></a>三组IO复用函数的比较</h1><p><img src="https://z3.ax1x.com/2021/09/17/4MrcVS.png" alt="image"></p>
+<h1 id="高级应用"><a href="#高级应用" class="headerlink" title="高级应用"></a>高级应用</h1><h2 id="非阻塞的connect"><a href="#非阻塞的connect" class="headerlink" title="非阻塞的connect"></a>非阻塞的connect</h2><h2 id="聊天室程序"><a href="#聊天室程序" class="headerlink" title="聊天室程序"></a>聊天室程序</h2><h2 id="同时处理tcp和udp服务"><a href="#同时处理tcp和udp服务" class="headerlink" title="同时处理tcp和udp服务"></a>同时处理tcp和udp服务</h2><h1 id="xinetd"><a href="#xinetd" class="headerlink" title="xinetd"></a>xinetd</h1>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag"># 网络编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-libevent-1/" rel="prev" title="LINUX网络编程-libevent">
+                  <i class="fa fa-chevron-left"></i> LINUX网络编程-libevent
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B-1/" rel="next" title="LINUX网络编程-多线程编程">
+                  LINUX网络编程-多线程编程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

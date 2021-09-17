@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="[toc] 操作系统的基本概念定义操作系统是运行在计算机上最重要的一种软件，它管理计算机的资源和进程以及所有的硬件和软件。它为计算机硬件和软件提供了一种中间层  通常情况下，计算机上会运行着许多应用程序，它们都需要对内存和 CPU 进行交互，操作系统的目的就是为了保证这些访问和交互能够准确无误的进行。 目的 管理计算机资源，这些资源包括 CPU、内存、磁盘驱动器、打印机等。 提供一种图形界面，就像">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-面经">
+<meta property="og:url" content="http://example.com/2021/08/29/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E9%9D%A2%E7%BB%8F/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="[toc] 操作系统的基本概念定义操作系统是运行在计算机上最重要的一种软件，它管理计算机的资源和进程以及所有的硬件和软件。它为计算机硬件和软件提供了一种中间层  通常情况下，计算机上会运行着许多应用程序，它们都需要对内存和 CPU 进行交互，操作系统的目的就是为了保证这些访问和交互能够准确无误的进行。 目的 管理计算机资源，这些资源包括 CPU、内存、磁盘驱动器、打印机等。 提供一种图形界面，就像">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667552-sYGAdX-os8-0.png">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/J0g14CUwaZcrrw2Viat1D5a2tKCcAB3p0qjbgAWHPb9cEWoUuvDaX10CNnDlemF2aXiayiauQgYt5EvjA7o6SOTyA/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667555-PjcHRt-os8-1.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667560-oKBJCb-os8-2.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667563-gDSXga-os8-3.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667567-TCNgmS-os8-4.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667581-skmJvk-os8-9.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667584-BSuuNg-os8-10.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667586-uBtHVk-os8-11.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667589-KeikWR-os8-12.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667592-hZRUqJ-os8-13.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667595-cifojX-os8-14.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667598-lpcwQN-os8-15.png">
+<meta property="og:image" content="https://pic.leetcode-cn.com/1612667601-NmEskJ-os8-16.png">
+<meta property="article:published_time" content="2021-08-29T14:23:25.000Z">
+<meta property="article:modified_time" content="2021-08-29T14:23:50.262Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="面经">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.leetcode-cn.com/1612667552-sYGAdX-os8-0.png">
+
+
+<link rel="canonical" href="http://example.com/2021/08/29/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E9%9D%A2%E7%BB%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/08/29/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E9%9D%A2%E7%BB%8F/","path":"2021/08/29/操作系统-面经/","title":"操作系统-面经"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>操作系统-面经 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">操作系统的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E7%9A%84"><span class="nav-number">1.2.</span> <span class="nav-text">目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E4%BD%93%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">单体系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.3.2.</span> <span class="nav-text">分层系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E5%86%85%E6%A0%B8"><span class="nav-number">1.3.3.</span> <span class="nav-text">微内核</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.4.</span> <span class="nav-text">客户-服务器模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%A1%B5"><span class="nav-number">2.</span> <span class="nav-text">分页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1"><span class="nav-number">3.</span> <span class="nav-text">进程之间的通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%A6%82%E5%BF%B5"><span class="nav-number">3.1.</span> <span class="nav-text">通信概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAID"><span class="nav-number">5.</span> <span class="nav-text">RAID</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RAID%E7%9A%84%E7%BA%A7%E5%88%AB%EF%BC%9A"><span class="nav-number">5.1.</span> <span class="nav-text">RAID的级别：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RAID%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8A%9F%E8%83%BD%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">RAID的三个功能：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E7%8A%B6%E6%80%81"><span class="nav-number">6.</span> <span class="nav-text">进程之间的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">调度算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-number">7.1.</span> <span class="nav-text">分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E5%A4%84%E7%90%86%E4%B8%AD%E8%B0%83%E5%BA%A6"><span class="nav-number">7.2.</span> <span class="nav-text">批处理中调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FCFS-%E5%85%88%E6%9D%A5%E5%85%88%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.2.1.</span> <span class="nav-text">FCFS-先来先服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E4%BD%9C%E4%B8%9A%E4%BC%98%E5%85%88"><span class="nav-number">7.2.2.</span> <span class="nav-text">最短作业优先</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E5%89%A9%E4%BD%99%E5%AE%9E%E7%8E%B0%E4%BC%98%E5%85%88"><span class="nav-number">7.2.3.</span> <span class="nav-text">最短剩余实现优先</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E8%B0%83%E5%BA%A6"><span class="nav-number">7.3.</span> <span class="nav-text">交互系统中的调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%AE%E8%AF%A2%E8%B0%83%E5%BA%A6"><span class="nav-number">7.3.1.</span> <span class="nav-text">轮询调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%85%88%E7%BA%A7%E8%B0%83%E5%BA%A6"><span class="nav-number">7.3.2.</span> <span class="nav-text">优先级调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E8%BF%9B%E7%A8%8B%E4%BC%98%E5%85%88"><span class="nav-number">7.3.3.</span> <span class="nav-text">最短进程优先</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BD%A9%E7%A5%A8%E8%B0%83%E5%BA%A6"><span class="nav-number">7.3.4.</span> <span class="nav-text">彩票调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%B9%B3%E5%88%86%E4%BA%AB%E8%B0%83%E5%BA%A6"><span class="nav-number">7.3.5.</span> <span class="nav-text">公平分享调度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%B1%E5%93%8D%E8%B0%83%E5%BA%A6%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%8C%87%E6%A0%87"><span class="nav-number">8.</span> <span class="nav-text">影响调度程序的指标</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/29/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E9%9D%A2%E7%BB%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统-面经
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-08-29 22:23:25 / Modified: 22:23:50" itemprop="dateCreated datePublished" datetime="2021-08-29T22:23:25+08:00">2021-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%9D%A2%E7%BB%8F/" itemprop="url" rel="index"><span itemprop="name">面经</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>[toc]</p>
+<h2 id="操作系统的基本概念"><a href="#操作系统的基本概念" class="headerlink" title="操作系统的基本概念"></a>操作系统的基本概念</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>操作系统是运行在计算机上最重要的一种软件，它管理计算机的资源和进程以及所有的硬件和软件。它为计算机硬件和软件提供了一种中间层</p>
+<p><img src="https://pic.leetcode-cn.com/1612667552-sYGAdX-os8-0.png" alt="image"></p>
+<p>通常情况下，计算机上会运行着许多应用程序，它们都需要对内存和 CPU 进行交互，操作系统的目的就是为了保证这些访问和交互能够准确无误的进行。</p>
+<h3 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h3><ul>
+<li>管理计算机资源，这些资源包括 CPU、内存、磁盘驱动器、打印机等。</li>
+<li>提供一种图形界面，就像我们前面描述的那样，它提供了用户和计算机之间的桥梁。</li>
+<li>为其他软件提供服务，操作系统与软件进行交互，以便为其分配运行所需的任何必要资源。</li>
+</ul>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="https://mmbiz.qpic.cn/mmbiz_png/J0g14CUwaZcrrw2Viat1D5a2tKCcAB3p0qjbgAWHPb9cEWoUuvDaX10CNnDlemF2aXiayiauQgYt5EvjA7o6SOTyA/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="image"></p>
+<h4 id="单体系统"><a href="#单体系统" class="headerlink" title="单体系统"></a>单体系统</h4><p><img src="https://pic.leetcode-cn.com/1612667555-PjcHRt-os8-1.png" alt="image"></p>
+<h4 id="分层系统"><a href="#分层系统" class="headerlink" title="分层系统"></a>分层系统</h4><p><img src="https://pic.leetcode-cn.com/1612667560-oKBJCb-os8-2.png" alt="image"></p>
+<h4 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h4><p><img src="https://pic.leetcode-cn.com/1612667563-gDSXga-os8-3.png" alt="image"><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/2yiZZPjKmmFdoIlHC-jjxw">linux内核与Windows内核</a></p>
+<h4 id="客户-服务器模式"><a href="#客户-服务器模式" class="headerlink" title="客户-服务器模式"></a>客户-服务器模式</h4><p><img src="https://pic.leetcode-cn.com/1612667567-TCNgmS-os8-4.png" alt="image"></p>
+<h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><h2 id="进程之间的通信"><a href="#进程之间的通信" class="headerlink" title="进程之间的通信"></a>进程之间的通信</h2><h3 id="通信概念"><a href="#通信概念" class="headerlink" title="通信概念"></a>通信概念</h3><p><img src="https://pic.leetcode-cn.com/1612667581-skmJvk-os8-9.png" alt="image"></p>
+<ul>
+<li><p><strong>竞态条件</strong>：即两个或多个线程同时对一共享数据进行修改，从而影响程序运行的正确性时，这种就被称为竞态条件(race condition)。</p>
+</li>
+<li><p><strong>临界区</strong>：不仅共享资源会造成竞态条件，事实上共享文件、共享内存也会造成竞态条件、那么该如何避免呢？或许一句话可以概括说明：禁止一个或多个进程在同一时刻对共享资源（包括共享内存、共享文件等）进行读写。换句话说，我们需要一种 互斥(mutual exclusion) 条件，这也就是说，如果一个进程在某种方式下使用共享变量和文件的话，除该进程之外的其他进程就禁止做这种事（访问统一资源）。</p>
+</li>
+</ul>
+<p>一个好的解决方案，应该包含下面四种条件</p>
+<ol>
+<li>任何时候两个进程不能同时处于临界区</li>
+<li>不应对 CPU 的速度和数量做任何假设</li>
+<li>位于临界区外的进程不得阻塞其他进程</li>
+<li>不能使任何进程无限等待进入临界区</li>
+</ol>
+<ul>
+<li><strong>忙等互斥</strong>：当一个进程在对资源进行修改时，其他进程必须进行等待，进程之间要具有互斥性，我们讨论的解决方案其实都是基于忙等互斥提出的。<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><img src="https://pic.leetcode-cn.com/1612667584-BSuuNg-os8-10.png" alt="image"></li>
+<li><strong>消息传递</strong>：消息传递是进程间实现通信和同步等待的机制，使用消息传递，进程间的交流不需要共享变量，直接就可以进行通信；消息传递分为发送方和接收方</li>
+<li><strong>先进先出队列</strong>：先进先出队列指的是两个不相关联进程间的通信，两个进程之间可以彼此相互进程通信，这是一种全双工通信方式</li>
+<li><strong>管道</strong>：管道用于两个相关进程之间的通信，这是一种半双工的通信方式，如果需要全双工，需要另外一个管道。</li>
+<li><strong>直接通信</strong>：在这种进程通信的方式中，进程与进程之间只存在一条链接，进程间要明确通信双方的命名。</li>
+<li><strong>间接通信</strong>：间接通信是通信双方不会直接建立连接，而是找到一个中介者，这个中介者可能是个对象等等，进程可以在其中放置消息，并且可以从中删除消息，以此达到进程间通信的目的。</li>
+<li><strong>消息队列</strong>：消息队列是内核中存储消息的链表，它由消息队列标识符进行标识，这种方式能够在不同的进程之间提供全双工的通信连接。</li>
+<li><strong>共享内存</strong>：共享内存是使用所有进程之间的内存来建立连接，这种类型需要同步进程访问来相互保护。</li>
+</ul>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>死锁的出现需要同时满足下面四个条件</p>
+<ul>
+<li><strong>互斥(Mutual Exclusion)</strong>：一次只能有一个进程使用资源。如果另一个进程请求该资源，则必须延迟请求进程，直到释放该资源为止。</li>
+<li><strong>保持并等待(Hold and Wait)</strong>：必须存在一个进程，该进程至少持有一个资源，并且正在等待获取其他进程当前所持有的资源。</li>
+<li><strong>无抢占(No Preemption)</strong>：资源不能被抢占，也就是说，在进程完成其任务之后，只能由拥有它的进程自动释放资源。</li>
+<li><strong>循环等待(Circular Wait)</strong> ：必须存在一组 {p0，p1，….. pn} 的等待进程，使 p0 等待 p1 持有的资源，p1 等待由 p2 持有的资源， pn-1 正在等待由 pn 持有的资源，而 pn 正在等待由 p0 持有的资源。</li>
+</ul>
+<h2 id="RAID"><a href="#RAID" class="headerlink" title="RAID"></a>RAID</h2><p>RAID 称为 磁盘冗余阵列，简称磁盘阵列。利用虚拟化技术把多个硬盘结合在一起，成为一个或多个磁盘阵列组，目的是提升性能或数据冗余。</p>
+<h3 id="RAID的级别："><a href="#RAID的级别：" class="headerlink" title="RAID的级别："></a>RAID的级别：</h3><ul>
+<li>RAID 0 - 无容错的条带化磁盘阵列</li>
+<li>RAID 1 - 镜像和双工</li>
+<li>RAID 2 - 内存式纠错码</li>
+<li>RAID 3 - 比特交错奇偶校验</li>
+<li>RAID 4 - 块交错奇偶校验</li>
+<li>RAID 5 - 块交错分布式奇偶校验</li>
+<li>RAID 6 - P + Q冗余</li>
+</ul>
+<h3 id="RAID的三个功能："><a href="#RAID的三个功能：" class="headerlink" title="RAID的三个功能："></a>RAID的三个功能：</h3><ol>
+<li>通过对磁盘上的数据进行条带化，实现对数据成块存取，减少磁盘的机械寻道时间，提高了数据存取速度。 [3] </li>
+<li>通过对一个阵列中的几块磁盘同时读取，减少了磁盘的机械寻道时间，提高数据存取速度。 [3] </li>
+<li>通过镜像或者存储奇偶校验信息的方式，实现了对数据的冗余保护。</li>
+</ol>
+<h2 id="进程之间的状态"><a href="#进程之间的状态" class="headerlink" title="进程之间的状态"></a>进程之间的状态</h2><p><img src="https://pic.leetcode-cn.com/1612667586-uBtHVk-os8-11.png" alt="image"><br>图中会涉及三种状态</p>
+<ul>
+<li>运行态，运行态指的就是进程实际占用 CPU 时间片运行时</li>
+<li>就绪态，就绪态指的是可运行，但因为其他进程正在运行而处于就绪状态</li>
+<li>阻塞态，除非某种外部事件发生，否则进程不能运行</li>
+</ul>
+<p>逻辑上来说，运行态和就绪态是很相似的。这两种情况下都表示进程可运行，但是第二种情况没有获得 CPU 时间分片。第三种状态与前两种状态不同的原因是这个进程不能运行，CPU 空闲时也不能运行。</p>
+<p>三种状态会涉及四种状态间的切换，在操作系统发现进程不能继续执行时会发生状态1的轮转，在某些系统中进程执行系统调用，例如 pause，来获取一个阻塞的状态。在其他系统中包括 UNIX，当进程从管道或特殊文件（例如终端）中读取没有可用的输入时，该进程会被自动终止。</p>
+<p>转换 2 和转换 3 都是由进程调度程序（操作系统的一部分）引起的，进程本身不知道调度程序的存在。转换 2 的出现说明进程调度器认定当前进程已经运行了足够长的时间，是时候让其他进程运行 CPU 时间片了。当所有其他进程都运行过后，这时候该是让第一个进程重新获得 CPU 时间片的时候了，就会发生转换 3。</p>
+<p>程序调度指的是，决定哪个进程优先被运行和运行多久，这是很重要的一点。已经设计出许多算法来尝试平衡系统整体效率与各个流程之间的竞争需求。</p>
+<p>当进程等待的一个外部事件发生时（如从外部输入一些数据后），则发生转换 4。如果此时没有其他进程在运行，则立刻触发转换 3，该进程便开始运行，否则该进程会处于就绪阶段，等待 CPU 空闲后再轮到它运行。</p>
+<h2 id="调度算法"><a href="#调度算法" class="headerlink" title="调度算法"></a>调度算法</h2><h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ol>
+<li>批处理中的调度 </li>
+<li>交互系统中的调度</li>
+<li>实时系统中的调度<h3 id="批处理中调度"><a href="#批处理中调度" class="headerlink" title="批处理中调度"></a>批处理中调度</h3><h4 id="FCFS-先来先服务"><a href="#FCFS-先来先服务" class="headerlink" title="FCFS-先来先服务"></a>FCFS-先来先服务</h4><img src="https://pic.leetcode-cn.com/1612667589-KeikWR-os8-12.png" alt="image"><br>很像是先到先得。。。可能最简单的非抢占式调度算法的设计就是 先来先服务(first-come,first-serverd)。使用此算法，将按照请求顺序为进程分配 CPU。最基本的，会有一个就绪进程的等待队列。当第一个任务从外部进入系统时，将会立即启动并允许运行任意长的时间。它不会因为运行时间太长而中断。当其他作业进入时，它们排到就绪队列尾部。当正在运行的进程阻塞，处于等待队列的第一个进程就开始运行。当一个阻塞的进程重新处于就绪态时，它会像一个新到达的任务，会排在队列的末尾，即排在所有进程最后</li>
+</ol>
+<h4 id="最短作业优先"><a href="#最短作业优先" class="headerlink" title="最短作业优先"></a>最短作业优先</h4><p><img src="https://pic.leetcode-cn.com/1612667592-hZRUqJ-os8-13.png" alt="image"></p>
+<h4 id="最短剩余实现优先"><a href="#最短剩余实现优先" class="headerlink" title="最短剩余实现优先"></a>最短剩余实现优先</h4><p>最短作业优先的抢占式版本被称作为 最短剩余时间优先(Shortest Remaining Time Next) 算法。使用这个算法，调度程序总是选择剩余运行时间最短的那个进程运行。当一个新作业到达时，其整个时间同当前进程的剩余时间做比较。如果新的进程比当前运行进程需要更少的时间，当前进程就被挂起，而运行新的进程。这种方式能够使短期作业获得良好的服务。</p>
+<h3 id="交互系统中的调度"><a href="#交互系统中的调度" class="headerlink" title="交互系统中的调度"></a>交互系统中的调度</h3><h4 id="轮询调度"><a href="#轮询调度" class="headerlink" title="轮询调度"></a>轮询调度</h4><p>一种最古老、最简单、最公平并且最广泛使用的算法就是 轮询算法(round-robin)。每个进程都会被分配一个时间段，称为时间片(quantum)，在这个时间片内允许进程运行。如果时间片结束时进程还在运行的话，则抢占一个 CPU 并将其分配给另一个进程。如果进程在时间片结束前阻塞或结束，则 CPU 立即进行切换。轮询算法比较容易实现。调度程序所做的就是维护一个可运行进程的列表，就像下图中的 a，当一个进程用完时间片后就被移到队列的末尾，就像下图的 b。</p>
+<p><img src="https://pic.leetcode-cn.com/1612667595-cifojX-os8-14.png" alt="image"></p>
+<h4 id="优先级调度"><a href="#优先级调度" class="headerlink" title="优先级调度"></a>优先级调度</h4><p>事实情况是不是所有的进程都是优先级相等的。例如，在一所大学中的等级制度，首先是院长，然后是教授、秘书、后勤人员，最后是学生。这种将外部情况考虑在内就实现了优先级调度(priority scheduling)</p>
+<p><img src="https://pic.leetcode-cn.com/1612667598-lpcwQN-os8-15.png" alt="image"></p>
+<p>它的基本思想很明确，每个进程都被赋予一个优先级，优先级高的进程优先运行。</p>
+<p>但是也不意味着高优先级的进程能够永远一直运行下去，调度程序会在每个时钟中断期间降低当前运行进程的优先级。如果此操作导致其优先级降低到下一个最高进程的优先级以下，则会发生进程切换。或者，可以为每个进程分配允许运行的最大时间间隔。当时间间隔用完后，下一个高优先级的进程会得到运行的机会。</p>
+<h4 id="最短进程优先"><a href="#最短进程优先" class="headerlink" title="最短进程优先"></a>最短进程优先</h4><p>对于批处理系统而言，由于最短作业优先常常伴随着最短响应时间，一种方式是根据进程过去的行为进行推测，并执行估计运行时间最短的那一个。假设每个终端上每条命令的预估运行时间为 T0，现在假设测量到其下一次运行时间为 T1，可以用两个值的加权来改进估计时间，即aT0+ (1- 1)T1。通过选择 a 的值，可以决定是尽快忘掉老的运行时间，还是在一段长时间内始终记住它们。当 a = 1/2 时，可以得到下面这个序列</p>
+<p><img src="https://pic.leetcode-cn.com/1612667601-NmEskJ-os8-16.png" alt="image"></p>
+<p>可以看到，在三轮过后，T0 在新的估计值中所占比重下降至 1/8。</p>
+<p>有时把这种通过当前测量值和先前估计值进行加权平均从而得到下一个估计值的技术称作 老化(aging)。这种方法会使用很多预测值基于当前值的情况。</p>
+<h4 id="彩票调度"><a href="#彩票调度" class="headerlink" title="彩票调度"></a>彩票调度</h4><p>有一种既可以给出预测结果而又有一种比较简单的实现方式的算法，就是 彩票调度(lottery scheduling)算法。他的基本思想为进程提供各种系统资源的彩票。当做出一个调度决策的时候，就随机抽出一张彩票，拥有彩票的进程将获得资源。比如在 CPU 进行调度时，系统可以每秒持有 50 次抽奖，每个中奖进程会获得额外运行时间的奖励。</p>
+<h4 id="公平分享调度"><a href="#公平分享调度" class="headerlink" title="公平分享调度"></a>公平分享调度</h4><p>如果用户 1 启动了 9 个进程，而用户 2 启动了一个进程，使用轮转或相同优先级调度算法，那么用户 1 将得到 90 % 的 CPU 时间，而用户 2 将之得到 10 % 的 CPU 时间。</p>
+<p>为了阻止这种情况的出现，一些系统在调度前会把进程的拥有者考虑在内。在这种模型下，每个用户都会分配一些CPU 时间，而调度程序会选择进程并强制执行。因此如果两个用户每个都会有 50% 的 CPU 时间片保证，那么无论一个用户有多少个进程，都将获得相同的 CPU 份额。</p>
+<h2 id="影响调度程序的指标"><a href="#影响调度程序的指标" class="headerlink" title="影响调度程序的指标"></a>影响调度程序的指标</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU使用率</td>
+<td>CPU 正在执行任务（即不处于空闲状态）的时间百分比。</td>
+</tr>
+<tr>
+<td>等待时间</td>
+<td>这是进程轮流执行的时间，也就是进程切换的时间</td>
+</tr>
+<tr>
+<td>吞吐量</td>
+<td>单位时间内完成进程的数量</td>
+</tr>
+<tr>
+<td>响应时间</td>
+<td>这是从提交流程到获得有用输出所经过的时间。</td>
+</tr>
+<tr>
+<td>周转时间</td>
+<td>从提交流程到完成流程所经过的时间。</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+              <a href="/tags/%E9%9D%A2%E7%BB%8F/" rel="tag"># 面经</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/29/LINUX%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B-1/" rel="prev" title="LINUX网络编程-多线程编程">
+                  <i class="fa fa-chevron-left"></i> LINUX网络编程-多线程编程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E6%A0%91/" rel="next" title="数据结构-树">
+                  数据结构-树 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

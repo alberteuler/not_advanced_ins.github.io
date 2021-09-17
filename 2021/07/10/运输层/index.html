@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述只有主机才会出现传输层。其目的是提供进程和进程之间的逻辑通信服务。复用和分用功能是指，不同信道之间可以采用同一个管道进行信息的传输。 常见的传输层协议：TCP和UDP    传输协议 连接性 描述 特点     TCP 面向连接 传输数据之前需要建立连接，传输结束之后需要释放连接 可靠，时延大，适用于大文件   UDP 无连接 传输数据前不需要建立连接，收到报文后也不需要给出确认 不可靠，时延">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络笔记：传输层">
+<meta property="og:url" content="http://example.com/2021/07/10/%E8%BF%90%E8%BE%93%E5%B1%82/index.html">
+<meta property="og:site_name" content="不先进摸鱼研究所">
+<meta property="og:description" content="概述只有主机才会出现传输层。其目的是提供进程和进程之间的逻辑通信服务。复用和分用功能是指，不同信道之间可以采用同一个管道进行信息的传输。 常见的传输层协议：TCP和UDP    传输协议 连接性 描述 特点     TCP 面向连接 传输数据之前需要建立连接，传输结束之后需要释放连接 可靠，时延大，适用于大文件   UDP 无连接 传输数据前不需要建立连接，收到报文后也不需要给出确认 不可靠，时延">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019081218280314.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTE2MDk2OQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190811224019950.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTE2MDk2OQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdn.net/20180402204823254?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://img-blog.csdn.net/2018040221220414?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://img-blog.csdn.net/20180402215302353?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://img-blog.csdn.net/20160906072310877">
+<meta property="og:image" content="https://img-blog.csdn.net/20160906084353705">
+<meta property="og:image" content="https://img-blog.csdn.net/20140509220855687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvZGVjaHVudGlhbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200921075134609.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2traW5nX2VkYw==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170823152914228?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzY5NTMxMzU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="article:published_time" content="2021-07-10T03:28:14.000Z">
+<meta property="article:modified_time" content="2021-07-30T11:33:26.023Z">
+<meta property="article:author" content="Albert -W">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019081218280314.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTE2MDk2OQ==,size_16,color_FFFFFF,t_70">
+
+
+<link rel="canonical" href="http://example.com/2021/07/10/%E8%BF%90%E8%BE%93%E5%B1%82/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/07/10/%E8%BF%90%E8%BE%93%E5%B1%82/","path":"2021/07/10/运输层/","title":"计算机网络笔记：传输层"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>计算机网络笔记：传输层 | 不先进摸鱼研究所</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">不先进摸鱼研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">在hexo上的分站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BC%A0%E8%BE%93%E5%B1%82%E5%8D%8F%E8%AE%AE%EF%BC%9ATCP%E5%92%8CUDP"><span class="nav-number">1.1.</span> <span class="nav-text">常见的传输层协议：TCP和UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82%E7%9A%84%E5%AF%BB%E5%9D%80%E5%92%8C%E7%AB%AF%E5%8F%A3"><span class="nav-number">1.2.</span> <span class="nav-text">传输层的寻址和端口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%A4%9A%E8%B7%AF%E5%88%86%E8%A7%A3%E6%8A%80%E6%9C%AF"><span class="nav-number">2.</span> <span class="nav-text">多路复用和多路分解技术</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UDP"><span class="nav-number">3.</span> <span class="nav-text">UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%89%B9%E5%BE%81"><span class="nav-number">3.1.</span> <span class="nav-text">主要特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">首部格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP%E7%9A%84%E6%A0%A1%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">3.3.</span> <span class="nav-text">UDP的校验过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP"><span class="nav-number">4.</span> <span class="nav-text">TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%E5%8D%8F%E8%AE%AE%E7%89%B9%E5%BE%81"><span class="nav-number">4.1.</span> <span class="nav-text">TCP协议特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%E6%8A%A5%E6%96%87%E6%AE%B5"><span class="nav-number">4.2.</span> <span class="nav-text">TCP报文段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86"><span class="nav-number">4.3.</span> <span class="nav-text">连接管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">4.3.1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SYN%E7%9A%84%E6%B4%AA%E6%B3%9B%E6%94%BB%E5%87%BB"><span class="nav-number">4.3.1.1.</span> <span class="nav-text">SYN的洪泛攻击</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">4.3.2.</span> <span class="nav-text">四次挥手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">4.3.3.</span> <span class="nav-text">TCP有限状态机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.3.4.</span> <span class="nav-text">常见的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%9F"><span class="nav-number">4.3.4.1.</span> <span class="nav-text">1. 为什么是三次握手？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%9C%A8%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%EF%BC%8C%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AAack%E5%8F%B7%E4%B8%A2%E5%A4%B1%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="nav-number">4.3.4.2.</span> <span class="nav-text">2.在三次握手的过程中，最后一个ack号丢失了怎么办？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%812MSL%E6%97%B6%E9%97%B4%EF%BC%9F"><span class="nav-number">4.3.4.3.</span> <span class="nav-text">3. 为什么需要2MSL时间？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%EF%BC%9F"><span class="nav-number">4.3.4.4.</span> <span class="nav-text">4. 为什么是四次挥手？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">传输可靠性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%A1%E9%AA%8C"><span class="nav-number">4.4.1.</span> <span class="nav-text">校验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%8F%B7"><span class="nav-number">4.4.2.</span> <span class="nav-text">序号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E8%AE%A4"><span class="nav-number">4.4.3.</span> <span class="nav-text">确认</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E4%BC%A0"><span class="nav-number">4.4.4.</span> <span class="nav-text">重传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">4.5.</span> <span class="nav-text">流量控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">4.5.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%89%8B%E6%AE%B5%EF%BC%9A%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="nav-number">4.5.2.</span> <span class="nav-text">主要手段：滑动窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B"><span class="nav-number">4.5.3.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">4.6.</span> <span class="nav-text">拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E"><span class="nav-number">4.6.1.</span> <span class="nav-text">拥塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">4.6.2.</span> <span class="nav-text">拥塞控制算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%85%A2%E5%BC%80%E5%A7%8B%E5%92%8C%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D"><span class="nav-number">4.6.2.1.</span> <span class="nav-text">慢开始和拥塞避免</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BF%AB%E9%87%8D%E4%BC%A0%EF%BC%8C%E5%BF%AB%E6%81%A2%E5%A4%8D"><span class="nav-number">4.6.2.2.</span> <span class="nav-text">快重传，快恢复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.7.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">4.7.1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.7.1.1.</span> <span class="nav-text">两个协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BB%E5%9D%80%E5%92%8C%E7%AB%AF%E5%8F%A3"><span class="nav-number">4.7.1.2.</span> <span class="nav-text">寻址和端口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP%E2%80%94%E2%80%94%E6%97%A0%E8%BF%9E%E6%8E%A5%E7%9A%84"><span class="nav-number">4.7.2.</span> <span class="nav-text">UDP——无连接的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E2%80%94%E2%80%94%E6%9C%89%E8%BF%9E%E6%8E%A5%E7%9A%84"><span class="nav-number">4.7.3.</span> <span class="nav-text">TCP——有连接的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81"><span class="nav-number">4.7.3.1.</span> <span class="nav-text">特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F-1"><span class="nav-number">4.7.3.2.</span> <span class="nav-text">首部格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86-1"><span class="nav-number">4.7.3.3.</span> <span class="nav-text">连接管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E9%9D%A0%E4%BC%A0%E5%87%BA"><span class="nav-number">4.7.3.4.</span> <span class="nav-text">可靠传出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6-1"><span class="nav-number">4.7.3.5.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6-1"><span class="nav-number">4.7.3.6.</span> <span class="nav-text">拥塞控制</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Albert -W"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Albert -W</p>
+  <div class="site-description" itemprop="description">更不更新看心情</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:jackwjiong@126.com" title="E-Mail → mailto:jackwjiong@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/10/%E8%BF%90%E8%BE%93%E5%B1%82/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Albert -W">
+      <meta itemprop="description" content="更不更新看心情">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不先进摸鱼研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络笔记：传输层
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-07-10 11:28:14" itemprop="dateCreated datePublished" datetime="2021-07-10T11:28:14+08:00">2021-07-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-07-30 19:33:26" itemprop="dateModified" datetime="2021-07-30T19:33:26+08:00">2021-07-30</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>只有主机才会出现传输层。其目的是提供<strong>进程和进程</strong>之间的<strong>逻辑通信</strong>服务。<br>复用和分用功能是指，不同信道之间可以采用同一个管道进行信息的传输。</p>
+<h2 id="常见的传输层协议：TCP和UDP"><a href="#常见的传输层协议：TCP和UDP" class="headerlink" title="常见的传输层协议：TCP和UDP"></a>常见的传输层协议：TCP和UDP</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>传输协议</th>
+<th>连接性</th>
+<th>描述</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>面向连接</td>
+<td>传输数据之前需要建立连接，传输结束之后需要释放连接</td>
+<td>可靠，时延大，适用于大文件</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>无连接</td>
+<td>传输数据前不需要建立连接，收到报文后也不需要给出确认</td>
+<td>不可靠，时延小，适用于小文件</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="传输层的寻址和端口"><a href="#传输层的寻址和端口" class="headerlink" title="传输层的寻址和端口"></a>传输层的寻址和端口</h2><p><strong>复用</strong> 应用层的所有应用进程都可以透过传输层传输到网络层<br><strong>分用</strong> 传输层从网络层收到数据后交付指明的应用进程</p>
+<p>端口号只具有本地意义，不同计算机的相同端口没有任何的联系。<br>其长度为16bit，分为<strong>服务端端口号</strong>和<strong>数据端端口号</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>端口号分类</th>
+<th>范围</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>熟知端口号</td>
+<td><code>0~1023</code></td>
+<td>分配给TCP/IP协议的最重要的应用程序</td>
+</tr>
+<tr>
+<td>登记端口号</td>
+<td><code>1024~49151</code></td>
+<td>为没有数值端口号的应用程序使用的端口号</td>
+</tr>
+<tr>
+<td>客户端端口号</td>
+<td><code>49152~65535</code></td>
+<td>仅仅在客户进程运行的时候才会动态选择。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>常见的应用协议的端口号：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>应用程序</th>
+<th>熟知端口号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FTP</td>
+<td>21</td>
+</tr>
+<tr>
+<td>TELNET</td>
+<td>23</td>
+</tr>
+<tr>
+<td>SMTP</td>
+<td>25</td>
+</tr>
+<tr>
+<td>DNS</td>
+<td>53</td>
+</tr>
+<tr>
+<td>TFTP</td>
+<td>69</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>80</td>
+</tr>
+<tr>
+<td>SNMP</td>
+<td>161</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在网络中采用套接字组合来识别这个端点。套接字唯一表示了网络中的一个主机和它上面的一个进程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Socket = (IP,port);</span><br></pre></td></tr></table></figure>
+<h1 id="多路复用和多路分解技术"><a href="#多路复用和多路分解技术" class="headerlink" title="多路复用和多路分解技术"></a>多路复用和多路分解技术</h1><h1 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h1><h2 id="主要特征"><a href="#主要特征" class="headerlink" title="主要特征"></a>主要特征</h2><ol>
+<li>无连接</li>
+<li>最大努力交付——不保证可靠交付</li>
+<li>面向报文的，它不会对报文的长度进行任何合并或拆分。——因此并不适合大体积的数据的传输</li>
+<li>没有拥塞控制，适合实时应用</li>
+<li>首部开销小——8字节</li>
+</ol>
+<h2 id="首部格式"><a href="#首部格式" class="headerlink" title="首部格式"></a>首部格式</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>0—15</th>
+<th>16—31</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源端口号</td>
+<td>目的端口号</td>
+</tr>
+<tr>
+<td>UDP长度</td>
+<td>UDP检验和</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>数据</p>
+<p><img src="https://img-blog.csdnimg.cn/2019081218280314.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTE2MDk2OQ==,size_16,color_FFFFFF,t_70" alt="image"></p>
+<p>检测整个UDP报文是否有错，如果有错便会丢弃。<br>分用时，如果找不到对应目的端口号，便会丢弃报文，并给发送发发送ICMP的差错报告报文。</p>
+<h2 id="UDP的校验过程"><a href="#UDP的校验过程" class="headerlink" title="UDP的校验过程"></a>UDP的校验过程</h2><p>计算校验和的时候，会在UDP头部加上过一个12字节的伪首部。</p>
+<p><strong>发送端：</strong></p>
+<ol>
+<li>填上伪首部</li>
+<li>全0填充检验和字段</li>
+<li>全0填充数据部分</li>
+<li>伪首部+首部+数据部分采用二进制反码求和</li>
+<li>计算得到的检验和填入检验和字段</li>
+<li>去掉伪首部并发送</li>
+</ol>
+<p><strong>接收端：</strong></p>
+<ol>
+<li>填上伪首部</li>
+<li>伪首部+首部+数据部分采用二进制反码求和</li>
+<li>结果全1则表示无差错。否则丢弃数据或交付给应用层并附上出错的警告。</li>
+</ol>
+<h1 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h1><h2 id="TCP协议特征"><a href="#TCP协议特征" class="headerlink" title="TCP协议特征"></a>TCP协议特征</h2><ol>
+<li>面向连接（虚连接）的传输层协议</li>
+<li>点对点的传输</li>
+<li>可靠交付的服务，无差错、不丢失、不重复、按序到达。</li>
+<li>全双工通讯 1. 发送缓存；2。接受缓存。</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>发送缓存</th>
+<th>准备发送的数据和已经发送但没有收到确认的数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接受缓存</td>
+<td>按序到达但尚未被接受应用程序读取的数据和没有按序到达的数据</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>面向字节流：TCP把应用程序浇下来的数据看成仅仅是一连串字节流的集合</li>
+</ol>
+<h2 id="TCP报文段"><a href="#TCP报文段" class="headerlink" title="TCP报文段"></a>TCP报文段</h2><p>首部格式</p>
+<p><img src="https://img-blog.csdnimg.cn/20190811224019950.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTE2MDk2OQ==,size_16,color_FFFFFF,t_70" alt="image"></p>
+<p>概述：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>段名</th>
+<th>释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源端口</td>
+<td>发送方的端口号</td>
+</tr>
+<tr>
+<td>目的端口</td>
+<td>接收方的端口号</td>
+</tr>
+<tr>
+<td>序号<code>seq</code></td>
+<td>本报文段所发送的数据的第一个字节的序号</td>
+</tr>
+<tr>
+<td>确认号<code>ack</code></td>
+<td>期望收到对方下一个报文段的第一个数据字节的序号</td>
+</tr>
+<tr>
+<td>数据偏移</td>
+<td>TCP报文段的数据起始处距离TCP报文段的起始处的距离</td>
+</tr>
+<tr>
+<td><strong>控制位</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URG</strong></td>
+<td>= 1 时，数据具有优先级，不用在缓存里排队</td>
+</tr>
+<tr>
+<td><strong>ACK</strong></td>
+<td>= 1 时，确认号有效，连接建立后所有的报文段ACK=1</td>
+</tr>
+<tr>
+<td><strong>PSH</strong></td>
+<td>= 1 时，尽快交付接受应用进程，不用等缓存填满时再向上交付</td>
+</tr>
+<tr>
+<td><strong>RST</strong></td>
+<td>= 1 时，说明连接出现了严重差错，必须释放连接。</td>
+</tr>
+<tr>
+<td><strong>SYN</strong></td>
+<td>= 1 时，说明是一个连接请求/连接接受报文</td>
+</tr>
+<tr>
+<td><strong>FIN</strong></td>
+<td>= 1 时，说明报文段发送方数据完毕，要求释放连接</td>
+</tr>
+<tr>
+<td>窗口</td>
+<td>发送本报文段的一方的接受窗口，允许对方发送的数据量</td>
+</tr>
+<tr>
+<td>检验和</td>
+<td>检验首部+数据，检验师加上12b的伪头部</td>
+</tr>
+<tr>
+<td>紧急指针</td>
+<td>URG =1 的时候投入使用，指出报文段的紧急字节数</td>
+</tr>
+<tr>
+<td>选项</td>
+<td>最大报文长度，窗口扩大，时间戳，选择确认等</td>
+</tr>
+<tr>
+<td>填充</td>
+<td>填充0到4字节的整数倍</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="连接管理"><a href="#连接管理" class="headerlink" title="连接管理"></a>连接管理</h2><p><img src="https://img-blog.csdn.net/20180402204823254?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="image"></p>
+<h3 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h3><ol>
+<li>客户端发送连接请求报文段，无应用层数据：<code>SYN = 1，seq = x</code></li>
+<li>服务端魏TCP分配缓存和变量，并向客户端返回确认报文段，<strong>不携带数据</strong>，并允许链接:<code>SYN = 1,ACK=1,seq = y,ack = x+1</code></li>
+<li>客户端为TCP连接分配缓存和变量，并向服务器端返回确认的确认，<strong>可以携带数据</strong>：<br><code>SYN = 0,ACK = 1,sqe = x+1, ack = y+1</code></li>
+</ol>
+<h4 id="SYN的洪泛攻击"><a href="#SYN的洪泛攻击" class="headerlink" title="SYN的洪泛攻击"></a>SYN的洪泛攻击</h4><ol>
+<li>攻击者发送<code>TCP SYN</code>,待服务器返回<code>ACK</code>时，攻击者不再确认。</li>
+<li>此时TCP连接处于挂起状态，服务器会再次发送<code>ACK</code>.</li>
+<li>攻击者发对服务器发送大量TCP连接，导致服务器因为挂起的TCP连接而宕机。</li>
+</ol>
+<p>解决方法：SYN cookie</p>
+<h3 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h3><p><img src="https://img-blog.csdn.net/2018040221220414?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="image"></p>
+<ol>
+<li>客户端发送连接释放报文段，停止发送数据，主动关闭TCP连接。<code>FIN = 1,seq = u</code></li>
+<li>服务端回复确认报文段，连接处于半关闭状态。<code>ACK = 1,seq = v, ack  = u + 1</code></li>
+<li>服务端发送完数据，发出连接释放报文段，主动关闭TCP连接。<code>FIN = 1, ACK = 1,seq = w, ack = u + 1</code></li>
+<li>客户端回复确认报文段，<strong>等待2MSL</strong>，连接彻底关闭。<code>ACK = 1,seq = u + 1, ack = w + 1</code></li>
+</ol>
+<p>等待的原因是，如果第三步的确认报文段没有发送给服务器，那么服务器会重新发送报文给客户端。这个过程的时间间隔低于2MSL.</p>
+<h3 id="TCP有限状态机"><a href="#TCP有限状态机" class="headerlink" title="TCP有限状态机"></a>TCP有限状态机</h3><p><img src="https://img-blog.csdn.net/20180402215302353?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTk4MTUz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="image"></p>
+<h3 id="常见的问题"><a href="#常见的问题" class="headerlink" title="常见的问题"></a>常见的问题</h3><h4 id="1-为什么是三次握手？"><a href="#1-为什么是三次握手？" class="headerlink" title="1. 为什么是三次握手？"></a>1. 为什么是三次握手？</h4><p>我们来分析一种特殊情况，假设客户端请求建立连接，发给服务器SYN包等待服务器确认，服务器收到确认后，如果是两次握手，假设服务器给客户端在第二次握手时发送数据，数据从服务器发出，服务器认为连接已经建立，但在发送数据的过程中数据丢失，客户端认为连接没有建立，会进行重传。假设每次发送的数据一直在丢失，客户端一直SYN，服务器就会产生多个无效连接，占用资源，这个时候服务器可能会挂掉。这个现象就是我们听过的“SYN的洪水攻击”。</p>
+<p>总结：第三次握手是为了防止：如果客户端迟迟没有收到服务器返回确认报文，这时会放弃连接，重新启动一条连接请求，但问题是：服务器不知道客户端没有收到，所以他会收到两个连接，浪费连接开销。如果每次都是这样，就会浪费多个连接开销</p>
+<h4 id="2-在三次握手的过程中，最后一个ack号丢失了怎么办？"><a href="#2-在三次握手的过程中，最后一个ack号丢失了怎么办？" class="headerlink" title="2.在三次握手的过程中，最后一个ack号丢失了怎么办？"></a>2.在三次握手的过程中，最后一个ack号丢失了怎么办？</h4><p>如果此时ACK在网络中丢失，那么Server端该TCP连接的状态为SYN_RECV，并且依次等待3秒、6秒、12秒后重新发送SYN+ACK包，以便Client重新发送ACK包。 Server重发SYN+ACK包的次数，可以通过设置/proc/sys/net/ipv4/tcp_synack_retries修改，默认值为5。如果重发指定次数后，仍然未收到ACK应答，那么一段时间后，Server自动关闭这个连接。但是Client认为这个连接已经建立，如果Client端向Server写数据，Server端将以RST包(用于强制关闭tcp连接)响应，方能感知到Server的错误。</p>
+<h4 id="3-为什么需要2MSL时间？"><a href="#3-为什么需要2MSL时间？" class="headerlink" title="3. 为什么需要2MSL时间？"></a>3. 为什么需要2MSL时间？</h4><p>首先，MSL即Maximum Segment Lifetime，就是最大报文生存时间，是任何报文在网络上的存在的最长时间，超过这个时间报文将被丢弃。《TCP/IP详解》中是这样描述的：MSL是任何报文段被丢弃前在网络内的最长时间。RFC 793中规定MSL为2分钟，实际应用中常用的是30秒、1分钟、2分钟等。</p>
+<p>TCP的TIME_WAIT需要等待2MSL，当TCP的一端发起主动关闭，三次挥手完成后发送第四次挥手的ACK包后就进入这个状态，等待2MSL时间主要目的是：防止最后一个ACK包对方没有收到，那么对方在超时后将重发第三次握手的FIN包，主动关闭端接到重发的FIN包后可以再发一个ACK应答包。在TIME_WAIT状态时两端的端口不能使用，要等到2MSL时间结束才可以继续使用。当连接处于2MSL等待阶段时任何迟到的报文段都将被丢弃。</p>
+<h4 id="4-为什么是四次挥手？"><a href="#4-为什么是四次挥手？" class="headerlink" title="4. 为什么是四次挥手？"></a>4. 为什么是四次挥手？</h4><p>双方关闭连接要经过双方都同意。所以，首先是客服端给服务器发送FIN，要求关闭连接，服务器收到后会发送一个ACK进行确认。服务器然后再发送一个FIN，客户端发送ACK确认，并进入TIME_WAIT状态。等待2MSL后自动关闭。</p>
+<h2 id="传输可靠性"><a href="#传输可靠性" class="headerlink" title="传输可靠性"></a>传输可靠性</h2><p>网络层(IP)只能提供尽最大努力的交付，是不可靠的，因此必须要靠TCP实现可靠传输。</p>
+<p>可靠：保证接收方进程从缓存区读出的字节流和发送方发出的字节流完全一样。</p>
+<h3 id="校验"><a href="#校验" class="headerlink" title="校验"></a>校验</h3><ol>
+<li>增加伪首部，校验求和</li>
+</ol>
+<h3 id="序号"><a href="#序号" class="headerlink" title="序号"></a>序号</h3><p>采用字节序号功能。每一个字节都有一个序号。 </p>
+<h3 id="确认"><a href="#确认" class="headerlink" title="确认"></a>确认</h3><p>采用累计确认技术。</p>
+<h3 id="重传"><a href="#重传" class="headerlink" title="重传"></a>重传</h3><p>如果确认号和报文段的序号不符，则会要求发送方重传。</p>
+<p>确认重传不分家。</p>
+<ol>
+<li>TCP发送包在规定时间内没有收到确认就需要重传已经发送的报文段。</li>
+<li>采用自适应算法，动态改变RTTs</li>
+<li>冗余ACK——快速重传技术。当发送方收到了3个对于报文1的冗余ACK，就会认为报文2丢失，重传2号报文段</li>
+</ol>
+<h2 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>限制发送方的发送速度，使得接收方来得及接受</p>
+<h3 id="主要手段：滑动窗口"><a href="#主要手段：滑动窗口" class="headerlink" title="主要手段：滑动窗口"></a>主要手段：滑动窗口</h3><p>在通信过程中，接收方会根据自己接受缓存的大小，动态地调整发送方的发送窗口大小，即接受窗口rwnd，发送方的发送窗口取接受窗口rwnd和拥塞窗口cwnd的最小值。</p>
+<p>发送方和接受房的窗口大小应该是一样的。二者通过确认报文段商定窗口。</p>
+<p>窗口大小是可以动态变化的。</p>
+<p><img src="https://img-blog.csdn.net/20160906072310877" alt="image"><br><img src="https://img-blog.csdn.net/20160906084353705" alt="image"></p>
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p><img src="https://img-blog.csdn.net/20140509220855687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvZGVjaHVudGlhbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="image"></p>
+<p>降低传输速度的方法：减小滑动窗口。</p>
+<p>TCP为每个链接设定一个持续计时器。只要TCP链接的一方收到对方的零窗口通知，那么就会启动持续计时器。<br>如果持续计时器设置的时间稻妻，就会发送一个零窗口探测报文段，接收方收到探测报文段时会给出现在的窗口值。</p>
+<h2 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><h3 id="拥塞"><a href="#拥塞" class="headerlink" title="拥塞"></a>拥塞</h3><p>对资源需求的综合&gt;可用资源时，会导致拥塞。<br>网络中资源同时呈现供应不足——网络性能变坏——网络吞吐量随输入符合增大而下降<br>拥塞控制的目的：</p>
+<ol>
+<li>全局性：防止过多的数据注入到网络中</li>
+</ol>
+<p>需要考虑拥塞的原因并不是接收方导致的，而是整个网络的状况导致的。</p>
+<h3 id="拥塞控制算法"><a href="#拥塞控制算法" class="headerlink" title="拥塞控制算法"></a>拥塞控制算法</h3><p>在考虑拥塞控制算法时的给出的假定：</p>
+<ol>
+<li>数据单向传输。接收方只负责传送确认。</li>
+<li>接收方总是有足够大的缓存空间。发送窗口取决于拥塞程度。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">发送方 = min&#123;rwnd,cwnd&#125;</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>接收窗口</th>
+<th>接收方根据接受缓存设置的值，并告知给发送方，反映接收方的容量。</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>拥塞窗口</td>
+<td>发送方根据自己估算的网络拥塞程度而设置的窗口之，反应网络的当前容量。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>拥塞控制算法主要用来确定发发送窗口大小。</p>
+<h4 id="慢开始和拥塞避免"><a href="#慢开始和拥塞避免" class="headerlink" title="慢开始和拥塞避免"></a>慢开始和拥塞避免</h4><p><img src="https://img-blog.csdnimg.cn/20200921075134609.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2traW5nX2VkYw==,size_16,color_FFFFFF,t_70#pic_center" alt="image"></p>
+<p><strong>指数规律增长——加法增大——发生网络拥塞——乘法减小</strong><br>慢开始——拥塞避免——发生拥塞</p>
+<p>传输轮次：发送一批报文段，并收到它们的确认的时间。经历了一个往返时延RTT。</p>
+<p>开始发送一批拥塞窗口内的报文段到开始发送下一批拥塞窗口内的报文段的时间。</p>
+<p>ssthresh:慢开始门限。当拥塞窗口增加到这个程度的时候，拥塞窗口会线性地增长。</p>
+<p>发生拥塞之后，下一轮的慢开始的ssthresh值会是发生拥塞时的窗口值的一半。</p>
+<h4 id="快重传，快恢复"><a href="#快重传，快恢复" class="headerlink" title="快重传，快恢复"></a>快重传，快恢复</h4><p><img src="https://img-blog.csdn.net/20170823152914228?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzY5NTMxMzU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="image"></p>
+<p>发生拥塞的时候，会发生收到三个重复的确认号，那么会执行快重传算法，将拥塞窗口缩减到新的ssthresh值时，重新进入加法增大阶段。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><h4 id="两个协议"><a href="#两个协议" class="headerlink" title="两个协议"></a>两个协议</h4><h4 id="寻址和端口"><a href="#寻址和端口" class="headerlink" title="寻址和端口"></a>寻址和端口</h4><h3 id="UDP——无连接的"><a href="#UDP——无连接的" class="headerlink" title="UDP——无连接的"></a>UDP——无连接的</h3><h3 id="TCP——有连接的"><a href="#TCP——有连接的" class="headerlink" title="TCP——有连接的"></a>TCP——有连接的</h3><h4 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h4><h4 id="首部格式-1"><a href="#首部格式-1" class="headerlink" title="首部格式"></a>首部格式</h4><h4 id="连接管理-1"><a href="#连接管理-1" class="headerlink" title="连接管理"></a>连接管理</h4><h4 id="可靠传出"><a href="#可靠传出" class="headerlink" title="可靠传出"></a>可靠传出</h4><h4 id="流量控制-1"><a href="#流量控制-1" class="headerlink" title="流量控制"></a>流量控制</h4><h4 id="拥塞控制-1"><a href="#拥塞控制-1" class="headerlink" title="拥塞控制"></a>拥塞控制</h4>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/09/%E6%A6%82%E8%BF%B0/" rel="prev" title="计算机网络笔记：概述">
+                  <i class="fa fa-chevron-left"></i> 计算机网络笔记：概述
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/10/%E9%93%BE%E8%B7%AF%E5%B1%82/" rel="next" title="链路层">
+                  链路层 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Albert -W</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
